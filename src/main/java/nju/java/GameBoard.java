@@ -18,8 +18,7 @@ public class GameBoard extends JFrame{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // TODO: 调整背景大小
-        setSize(ground.getMyWidth(),
-                ground.getMyHeight());
+        setSize(ground.getMyWidth(), ground.getMyHeight());
         setLocationRelativeTo(null);
         setTitle("Ground");
     }
