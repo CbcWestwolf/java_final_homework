@@ -21,7 +21,6 @@ public class Ground extends JPanel {
         // TODO:添加键盘监听器
         setFocusable(true);
         initGround();
-
     }
 
     public int getMyHeight() {
