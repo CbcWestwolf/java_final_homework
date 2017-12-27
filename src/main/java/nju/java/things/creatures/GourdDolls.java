@@ -16,7 +16,7 @@ public class GourdDolls extends Creatures{
     public void run(){
         while (!Thread.interrupted()) {
 
-            if( this.getX() < this.ground.MAX_X )
+            if( this.getX() < this.ground.MAX_X -1 )
                 this.move(1,0);
             try {
 

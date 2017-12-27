@@ -1,5 +1,6 @@
 package nju.java;
 
+import nju.java.things.Things;
 import nju.java.things.creatures.GourdDolls;
 import nju.java.things.creatures.Grandpa;
 import nju.java.things.creatures.enemies.Snake;
@@ -15,8 +16,8 @@ import java.net.URL;
  */
 public class Ground extends JPanel {
 
-    public static final int MAX_X = 15;
-    public static final int MAX_Y = 8;
+    public static final int MAX_X = 16;
+    public static final int MAX_Y = 9;
     public static final int SPACE = 80;
 
     private int pixelHeight; // 上下的高度
@@ -25,16 +26,16 @@ public class Ground extends JPanel {
 
     private Image backgroundImage = null; // 背景图片
 
+    private Things things[][] = new Things[MAX_X][MAX_Y];
+
     private Grandpa grandpa = null;
     private GourdDolls [] gourdDolls = null;
     private Snake snake = null;
 
-    private char[] currentFormation = new  char[(MAX_X+2)*(MAX_Y+1)];
-    private char[] heyiFormation = new char[(MAX_X+2)*(MAX_Y+1)];
-
     public Ground(){
         // TODO:添加键盘监听器
         setFocusable(true);
+
         initFormation();
         initGround();
         initCreature();
@@ -60,27 +61,10 @@ public class Ground extends JPanel {
     }
 
     private void initFormation(){
-        for( int y = 0 ; y <= MAX_Y ; ++ y) {
-            for (int x = 0; x <= MAX_X; ++x) {
-                heyiFormation[(MAX_X+2)*y+x] = ' ';
-            }
-            heyiFormation[(MAX_X+2)*y+MAX_X+1] = '\n';
-        }
-
-        heyiFormation[(MAX_X+2)*0 + 1] = '1';
-        heyiFormation[(MAX_X+2)*1 + 2] = '2';
-        heyiFormation[(MAX_X+2)*2 + 3] = '3';
-        heyiFormation[(MAX_X+2)*3 + 4] = '4';
-        heyiFormation[(MAX_X+2)*2 + 5] = '5';
-        heyiFormation[(MAX_X+2)*1 + 6] = '6';
-        heyiFormation[(MAX_X+2)*0 + 7] = '7';
-        heyiFormation[(MAX_X+2)*MAX_Y + MAX_X] = '0';
-
 
     }
 
     private void initGround(){
-
         // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
         URL loc = this.getClass().getClassLoader().getResource("背景2.png");
         ImageIcon iia = new ImageIcon(loc); // Image是抽象类，所以只能通过ImageIcon来创建
@@ -93,20 +77,29 @@ public class Ground extends JPanel {
         catch(Exception e){
 
         }
+
+
     }
 
     private void initCreature(){
 
-        grandpa = new Grandpa(0,0,this);
+
+        grandpa = new Grandpa(0,4,this);
         grandpa.setImage("爷爷.png");
+        things[0][4] = grandpa;
 
-        snake = new Snake(MAX_X,MAX_Y/2,this);
+        snake = new Snake(MAX_X-1,MAX_Y/2,this);
         snake.setImage("蛇精.png");
+        things[MAX_X-1][MAX_Y/2] = snake;
 
-        gourdDolls = new GourdDolls[7];
-        for(int i = 0 ; i < 7 ; ++ i){
-            gourdDolls[i] = new GourdDolls(0,i+1,this);
-        }
+        gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
+        gourdDolls[0] = new GourdDolls(0,1,this);
+        gourdDolls[1] = new GourdDolls(1,2,this);
+        gourdDolls[2] = new GourdDolls(2,3,this);
+        gourdDolls[3] = new GourdDolls(3,4,this);
+        gourdDolls[4] = new GourdDolls(2,5,this);
+        gourdDolls[5] = new GourdDolls(1,6,this);
+        gourdDolls[6] = new GourdDolls(0,7,this);
         gourdDolls[0].setImage("大娃.png");
         gourdDolls[1].setImage("二娃.png");
         gourdDolls[2].setImage("三娃.png");
@@ -114,31 +107,13 @@ public class Ground extends JPanel {
         gourdDolls[4].setImage("五娃.png");
         gourdDolls[5].setImage("六娃.png");
         gourdDolls[6].setImage("七娃.png");
+        for(int i = 0;  i < 7 ; ++ i)
+            things[gourdDolls[i].getX()][gourdDolls[i].getY()] = gourdDolls[i];
 
     }
 
     private void readFormation(){
-        System.arraycopy(heyiFormation,0,currentFormation,0,heyiFormation.length);
 
-        for(int i = 0 ; i< currentFormation.length ; ++i){
-            if(currentFormation[i] == ' ')
-                continue;
-            int x , y;
-            x = i / (MAX_X+2);
-            y = i % (MAX_X+2);
-            switch (currentFormation[i]){
-                case '0': grandpa.setX(x); grandpa.setY(y);
-                    System.out.println("x:"+x+" y:"+y);
-                break;
-                case '1': gourdDolls[0].setX(x);gourdDolls[0].setY(y);break;
-                case '2': gourdDolls[1].setX(x);gourdDolls[1].setY(y);break;
-                case '3': gourdDolls[2].setX(x);gourdDolls[2].setY(y);break;
-                case '4': gourdDolls[3].setX(x);gourdDolls[3].setY(y);break;
-                case '5': gourdDolls[4].setX(x);gourdDolls[4].setY(y);break;
-                case '6': gourdDolls[5].setX(x);gourdDolls[5].setY(y);break;
-                case '7': gourdDolls[6].setX(x);gourdDolls[6].setY(y);break;
-            }
-        }
 
     }
 
@@ -180,17 +155,4 @@ public class Ground extends JPanel {
         super.repaint();
     }
 
-    public void printFormation(){
-        for(int x = 0 ; x <= MAX_X+1 ; ++ x){
-            for(int y = 0 ; y <= MAX_Y ; ++ y){
-                char a = currentFormation[x + y*(MAX_X+2)];
-                if(a ==  ' ')
-                    System.out.print("_");
-                else if(a == '\n')
-                    System.out.println("");
-                else
-                    System.out.print(a);
-            }
-        }
-    }
 }
