@@ -19,9 +19,9 @@ public class Ground extends JPanel {
     public static final int MAX_Y = 8;
     public static final int SPACE = 80;
 
-    private int myHeight = 10; // 上下的高度
+    private int pixelHeight; // 上下的高度
 
-    private int myWidth = 20; // 左右的长度
+    private int pixelWidth; // 左右的长度
 
     private Image backgroundImage = null; // 背景图片
 
@@ -29,8 +29,8 @@ public class Ground extends JPanel {
     private GourdDolls [] gourdDolls = null;
     private Snake snake = null;
 
-    private char [][]currentFormation = new char[MAX_X+1][MAX_Y+1];
-    private char [][]heyiFormation = new char[MAX_X+1][MAX_Y+1];
+    private char[] currentFormation = new  char[(MAX_X+2)*(MAX_Y+1)];
+    private char[] heyiFormation = new char[(MAX_X+2)*(MAX_Y+1)];
 
     public Ground(){
         // TODO:添加键盘监听器
@@ -43,38 +43,39 @@ public class Ground extends JPanel {
         actionCreature();
     }
 
-    public int getMyHeight() {
-        return myHeight;
+    public int getPixelHeight() {
+        return pixelHeight;
     }
 
-    public void setMyHeight(int myHeight) {
-        this.myHeight = myHeight;
+    public void setPixelHeight(int pixelHeight) {
+        this.pixelHeight = pixelHeight;
     }
 
-    public int getMyWidth() {
-        return myWidth ;
+    public int getPixelWidth() {
+        return pixelWidth;
     }
 
-    public void setMyWidth(int myWidth) {
-        this.myWidth = myWidth;
+    public void setPixelWidth(int pixelWidth) {
+        this.pixelWidth = pixelWidth;
     }
 
     private void initFormation(){
-        for(int y = 0 ; y <= MAX_Y ; ++ y) {
-            for (int x = 0; x < +MAX_X; ++x) {
-                heyiFormation[x][y] = ' ';
-
+        for( int y = 0 ; y <= MAX_Y ; ++ y) {
+            for (int x = 0; x <= MAX_X; ++x) {
+                heyiFormation[(MAX_X+2)*y+x] = ' ';
             }
+            heyiFormation[(MAX_X+2)*y+MAX_X+1] = '\n';
         }
 
-        heyiFormation[0][1] = '1';
-        heyiFormation[1][2] = '2';
-        heyiFormation[2][3] = '3';
-        heyiFormation[3][4] = '4';
-        heyiFormation[2][5] = '5';
-        heyiFormation[1][6] = '6';
-        heyiFormation[0][7] = '7';
-        heyiFormation[0][4] = '0';
+        heyiFormation[(MAX_X+2)*0 + 1] = '1';
+        heyiFormation[(MAX_X+2)*1 + 2] = '2';
+        heyiFormation[(MAX_X+2)*2 + 3] = '3';
+        heyiFormation[(MAX_X+2)*3 + 4] = '4';
+        heyiFormation[(MAX_X+2)*2 + 5] = '5';
+        heyiFormation[(MAX_X+2)*1 + 6] = '6';
+        heyiFormation[(MAX_X+2)*0 + 7] = '7';
+        heyiFormation[(MAX_X+2)*MAX_Y + MAX_X] = '0';
+
 
     }
 
@@ -84,8 +85,8 @@ public class Ground extends JPanel {
         URL loc = this.getClass().getClassLoader().getResource("背景2.png");
         ImageIcon iia = new ImageIcon(loc); // Image是抽象类，所以只能通过ImageIcon来创建
         backgroundImage = iia.getImage();
-        myWidth = iia.getIconWidth();
-        myHeight = iia.getIconHeight();
+        pixelWidth = iia.getIconWidth();
+        pixelHeight = iia.getIconHeight();
         try {
             backgroundImage = ImageIO.read(new File("背景2.png"));
         }
@@ -117,21 +118,28 @@ public class Ground extends JPanel {
     }
 
     private void readFormation(){
-        for(int x = 0 ; x < MAX_X ; ++ x){
-            for(int y = 0 ; y < MAX_Y ; ++ y){
-                currentFormation[x][y] = heyiFormation[x][y]; // 选择鹤翼阵
-                switch (currentFormation[x][y]){
-                    case '0': grandpa.setX(x); grandpa.setY(y); break;
-                    case '1': gourdDolls[0].setX(x);gourdDolls[0].setY(y);break;
-                    case '2': gourdDolls[1].setX(x);gourdDolls[1].setY(y);break;
-                    case '3': gourdDolls[2].setX(x);gourdDolls[2].setY(y);break;
-                    case '4': gourdDolls[3].setX(x);gourdDolls[3].setY(y);break;
-                    case '5': gourdDolls[4].setX(x);gourdDolls[4].setY(y);break;
-                    case '6': gourdDolls[5].setX(x);gourdDolls[5].setY(y);break;
-                    case '7': gourdDolls[6].setX(x);gourdDolls[6].setY(y);break;
-                }
+        System.arraycopy(heyiFormation,0,currentFormation,0,heyiFormation.length);
+
+        for(int i = 0 ; i< currentFormation.length ; ++i){
+            if(currentFormation[i] == ' ')
+                continue;
+            int x , y;
+            x = i / (MAX_X+2);
+            y = i % (MAX_X+2);
+            switch (currentFormation[i]){
+                case '0': grandpa.setX(x); grandpa.setY(y);
+                    System.out.println("x:"+x+" y:"+y);
+                break;
+                case '1': gourdDolls[0].setX(x);gourdDolls[0].setY(y);break;
+                case '2': gourdDolls[1].setX(x);gourdDolls[1].setY(y);break;
+                case '3': gourdDolls[2].setX(x);gourdDolls[2].setY(y);break;
+                case '4': gourdDolls[3].setX(x);gourdDolls[3].setY(y);break;
+                case '5': gourdDolls[4].setX(x);gourdDolls[4].setY(y);break;
+                case '6': gourdDolls[5].setX(x);gourdDolls[5].setY(y);break;
+                case '7': gourdDolls[6].setX(x);gourdDolls[6].setY(y);break;
             }
         }
+
     }
 
     private void actionCreature(){
@@ -146,7 +154,7 @@ public class Ground extends JPanel {
 
         // TODO: add all drawImage() here
 
-        g.drawImage(backgroundImage,0,0,myWidth,myHeight,this);
+        g.drawImage(backgroundImage,0,0, pixelWidth, pixelHeight,this);
         g.drawImage(grandpa.getImage(),grandpa.getX()*SPACE , grandpa.getY()*SPACE,SPACE,SPACE,this);
         for(int i = 0 ; i<7 ; ++ i)
             g.drawImage(gourdDolls[i].getImage(),
@@ -161,7 +169,28 @@ public class Ground extends JPanel {
     public void paint(Graphics g){
         super.paint(g);
         paintGround(g);
+
+        // printFormation();
     }
 
+    @Override
+    public void repaint(){
+        // TODO: 添加更新currentFormation
 
+        super.repaint();
+    }
+
+    public void printFormation(){
+        for(int x = 0 ; x <= MAX_X+1 ; ++ x){
+            for(int y = 0 ; y <= MAX_Y ; ++ y){
+                char a = currentFormation[x + y*(MAX_X+2)];
+                if(a ==  ' ')
+                    System.out.print("_");
+                else if(a == '\n')
+                    System.out.println("");
+                else
+                    System.out.print(a);
+            }
+        }
+    }
 }
