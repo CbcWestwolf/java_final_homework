@@ -20,8 +20,8 @@ public class Ground extends JPanel {
 
 
     public static final int STEP = 20; // 每次移动的距离
-    public static final int SPACE = 80 ; // 图片的边长   (必须是STEP的整数倍）
-    public static final int DISTANCE = 80; // 攻击范围
+    public static final int SPACE = 4*STEP ; // 图片的边长   (必须是STEP的整数倍）
+    public static final int DISTANCE = 2*STEP; // 攻击范围
     public static final int TIME_CLOCK = 200; // 线程休眠时间 （毫秒）
     public static final int PIXEL_HEIGHT = 720; // 上下的高度（像素点）
     public static final int PIXEL_WIDTH = 1280; // 左右的长度
@@ -149,7 +149,7 @@ public class Ground extends JPanel {
         gourdDolls[5].setImage("六娃.png");
         gourdDolls[6].setImage("七娃.png");
 
-        snake = new SnakeQueen(MAX_X-1,MAX_Y/2,this);
+        snake = new SnakeQueen(MAX_X,MAX_Y/2,this);
         snake.setImage("蛇精.png");
 
     }
@@ -166,11 +166,11 @@ public class Ground extends JPanel {
 
         for(int i = 0 ; i < 7  ; ++ i) {
             gourddollsThreads[i] = new Thread(gourdDolls[i]);
-            gourddollsThreads[i].start();
+            //gourddollsThreads[i].start();
         }
 
-        grandpaThread.start();
-        snakeThread.start();
+        //grandpaThread.start();
+        //snakeThread.start();
     }
 
     private void paintGround(Graphics g){
