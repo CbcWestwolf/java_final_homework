@@ -12,9 +12,9 @@ import java.util.Random;
  * Created by cbcwestwolf on 2017/12/26.
  */
 public abstract class Creatures extends Things implements Runnable{
-    private Ground ground; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
+    protected Ground ground; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
 
-    private Image image;
+    protected Image image;
 
     public Creatures(){
         super(0,0);

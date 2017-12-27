@@ -19,9 +19,9 @@ public class Ground extends JPanel {
     public static final int MAX_Y = 8;
     public static final int SPACE = 80;
 
-    private int myHeight = 100; // 上下的高度
+    private int myHeight = 10; // 上下的高度
 
-    private int myWidth = 100; // 左右的长度
+    private int myWidth = 20; // 左右的长度
 
     private Image backgroundImage = null; // 背景图片
 
@@ -29,11 +29,18 @@ public class Ground extends JPanel {
     private GourdDolls [] gourdDolls = null;
     private Snake snake = null;
 
+    private char [][]currentFormation = new char[MAX_X+1][MAX_Y+1];
+    private char [][]heyiFormation = new char[MAX_X+1][MAX_Y+1];
+
     public Ground(){
         // TODO:添加键盘监听器
         setFocusable(true);
+        initFormation();
         initGround();
         initCreature();
+        readFormation();
+
+        actionCreature();
     }
 
     public int getMyHeight() {
@@ -45,11 +52,30 @@ public class Ground extends JPanel {
     }
 
     public int getMyWidth() {
-        return myWidth;
+        return myWidth ;
     }
 
     public void setMyWidth(int myWidth) {
         this.myWidth = myWidth;
+    }
+
+    private void initFormation(){
+        for(int y = 0 ; y <= MAX_Y ; ++ y) {
+            for (int x = 0; x < +MAX_X; ++x) {
+                heyiFormation[x][y] = ' ';
+
+            }
+        }
+
+        heyiFormation[0][1] = '1';
+        heyiFormation[1][2] = '2';
+        heyiFormation[2][3] = '3';
+        heyiFormation[3][4] = '4';
+        heyiFormation[2][5] = '5';
+        heyiFormation[1][6] = '6';
+        heyiFormation[0][7] = '7';
+        heyiFormation[0][4] = '0';
+
     }
 
     private void initGround(){
@@ -73,6 +99,9 @@ public class Ground extends JPanel {
         grandpa = new Grandpa(0,0,this);
         grandpa.setImage("爷爷.png");
 
+        snake = new Snake(MAX_X,MAX_Y/2,this);
+        snake.setImage("蛇精.png");
+
         gourdDolls = new GourdDolls[7];
         for(int i = 0 ; i < 7 ; ++ i){
             gourdDolls[i] = new GourdDolls(0,i+1,this);
@@ -85,9 +114,32 @@ public class Ground extends JPanel {
         gourdDolls[5].setImage("六娃.png");
         gourdDolls[6].setImage("七娃.png");
 
-        snake = new Snake(MAX_X,MAX_Y/2,this);
-        snake.setImage("蛇精.png");
+    }
 
+    private void readFormation(){
+        for(int x = 0 ; x < MAX_X ; ++ x){
+            for(int y = 0 ; y < MAX_Y ; ++ y){
+                currentFormation[x][y] = heyiFormation[x][y]; // 选择鹤翼阵
+                switch (currentFormation[x][y]){
+                    case '0': grandpa.setX(x); grandpa.setY(y); break;
+                    case '1': gourdDolls[0].setX(x);gourdDolls[0].setY(y);break;
+                    case '2': gourdDolls[1].setX(x);gourdDolls[1].setY(y);break;
+                    case '3': gourdDolls[2].setX(x);gourdDolls[2].setY(y);break;
+                    case '4': gourdDolls[3].setX(x);gourdDolls[3].setY(y);break;
+                    case '5': gourdDolls[4].setX(x);gourdDolls[4].setY(y);break;
+                    case '6': gourdDolls[5].setX(x);gourdDolls[5].setY(y);break;
+                    case '7': gourdDolls[6].setX(x);gourdDolls[6].setY(y);break;
+                }
+            }
+        }
+    }
+
+    private void actionCreature(){
+        Thread[] gourddollsThreads = new Thread[7];
+        for(int i = 0 ; i < 7  ; ++ i) {
+            gourddollsThreads[i] = new Thread(gourdDolls[i]);
+            gourddollsThreads[i].start();
+        }
     }
 
     private void paintGround(Graphics g){
