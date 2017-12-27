@@ -2,7 +2,6 @@ package nju.java; /**
  * Created by cbcwestwolf on 2017/12/26.
  */
 
-
 import javax.swing.*;
 
 public class GameBoard extends JFrame{

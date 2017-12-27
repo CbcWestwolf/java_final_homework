@@ -6,11 +6,10 @@ package nju.java.things;
  */
 
 // 表示空地或者生物体
-public class Things {
+public abstract class Things {
 
-
-    private int x ;
-    private int y ;
+    private int x ; // [ 0 , 15 ]
+    private int y ; // [ 0 , 8 ]
 
     public Things(int x, int y) {
         this.x = x;

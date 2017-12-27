@@ -1,6 +1,7 @@
-package nju.java.things;
+package nju.java.things.creatures;
 
 import nju.java.Ground;
+import nju.java.things.Things;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +16,11 @@ public abstract class Creatures extends Things implements Runnable{
 
     private Image image;
 
+    public Creatures(){
+        super(0,0);
+        this.ground = null;
+    }
+
     public Creatures(int x, int y, Ground ground) {
         super(x,y);
         this.ground = ground;
@@ -28,8 +34,8 @@ public abstract class Creatures extends Things implements Runnable{
         this.image = image;
     }
 
-    public void setImage(String s){
-        URL loc = this.getClass().getClassLoader().getResource(s);
+    public void setImage(String filename){
+        URL loc = this.getClass().getClassLoader().getResource(filename);
         ImageIcon iia = new ImageIcon(loc);
         Image image = iia.getImage();
         this.setImage(image);
