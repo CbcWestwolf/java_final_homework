@@ -10,9 +10,23 @@ public class Grandpa extends Creatures {
 
     public Grandpa(int x, int y, Ground ground) {
         super(x, y, ground);
+        power = 0; // 爷爷羸弱无比
     }
 
     public void run(){
+        while (!Thread.interrupted()) {
 
+            int newX = this.getX() + 1 ;
+            if( newX < this.ground.MAX_X -1 )
+                this.move(1,0);
+            try {
+
+                Thread.sleep(this.ground.TIME_CLOCK);
+                this.ground.repaint();
+
+            } catch (Exception e) {
+
+            }
+        }
     }
 }

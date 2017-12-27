@@ -17,3 +17,8 @@
 1. 空地设置为`Empty`；
 2. 生命体设置为`Creature`。
   在`Ground`类中，有一个`M*N`的`things`数组。如果`things[i][j] instanceof Empty`,说明改地方是空地；否则为相应生命体。
+
+## 葫芦娃妖怪战力分析
+[这里](https://www.zhihu.com/question/34581237?from=androidqq)分析了葫芦娃中妖怪的战斗能力，可见就战力来看：
+**蝎子大王>>蜈蚣精>蝙蝠精>蛤蟆精>蛇精**，其中蝎子大王和蛇精应该实现为单例模式。
+

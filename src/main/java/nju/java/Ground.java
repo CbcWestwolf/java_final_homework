@@ -1,63 +1,120 @@
 package nju.java;
 
-import nju.java.things.Things;
+import nju.java.things.creatures.Creatures;
 import nju.java.things.creatures.GourdDolls;
 import nju.java.things.creatures.Grandpa;
-import nju.java.things.creatures.enemies.Snake;
+import nju.java.things.creatures.enemies.ScorpionKing;
+import nju.java.things.creatures.enemies.SnakeQueen;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by cbcwestwolf on 2017/12/26.
  */
 public class Ground extends JPanel {
 
-    public static final int MAX_X = 16;
-    public static final int MAX_Y = 9;
-    public static final int SPACE = 80;
 
-    private int pixelHeight; // 上下的高度
-
-    private int pixelWidth; // 左右的长度
+    public static final int STEP = 20; // 每次移动的距离
+    public static final int SPACE = 80 ; // 图片的边长   (必须是STEP的整数倍）
+    public static final int DISTANCE = 80; // 攻击范围
+    public static final int TIME_CLOCK = 200; // 线程休眠时间 （毫秒）
+    public static final int PIXEL_HEIGHT = 720; // 上下的高度（像素点）
+    public static final int PIXEL_WIDTH = 1280; // 左右的长度
+    public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
+    public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
 
     private Image backgroundImage = null; // 背景图片
 
-    private Things things[][] = new Things[MAX_X][MAX_Y];
-
     private Grandpa grandpa = null;
     private GourdDolls [] gourdDolls = null;
-    private Snake snake = null;
+
+    // 蝎子精和蛇精是唯一的
+    private SnakeQueen snake = null;
+    private ScorpionKing scorpion = null;
+    private ArrayList<Creatures> enemy = new ArrayList<Creatures>(); // 小马仔们
+
 
     public Ground(){
         // TODO:添加键盘监听器
         setFocusable(true);
 
-        initFormation();
+        //initFormation();
         initGround();
         initCreature();
-        readFormation();
+        //readFormation();
 
         actionCreature();
     }
 
-    public int getPixelHeight() {
-        return pixelHeight;
+    // Creatures API: get grandpa's location for enemy
+    public int[] getGrandpaLocation(){
+        int[] result = new int[2];
+        if(grandpa == null){
+            result[0] = result[1] = -1;
+        }
+        else {
+            result[0] = grandpa.getX();
+            result[1] = grandpa.getY();
+        }
+        return result;
     }
 
-    public void setPixelHeight(int pixelHeight) {
-        this.pixelHeight = pixelHeight;
-    }
+    // Creatures API: get nearest enemy's location for gourdDolls
+    private int[] getNearestEnemy(int x, int y){
 
-    public int getPixelWidth() {
-        return pixelWidth;
-    }
+        int[] result = new int[0]; // 目标坐标
+        int minDistance = -1;
 
-    public void setPixelWidth(int pixelWidth) {
-        this.pixelWidth = pixelWidth;
+        if(scorpion != null ) {
+            minDistance = (scorpion.getX() - x) * (scorpion.getX() - x)
+                    + (scorpion.getY() - y) * (scorpion.getY() - y);
+            result[0] = scorpion.getX();
+            result[1] = scorpion.getY();
+        }
+        if(snake != null ){
+            int tempDistance = (snake.getX() - x) * (snake.getX() - x)
+                    + (snake.getY() - y) * (snake.getY() - y);
+            if( tempDistance < minDistance ){
+                minDistance = tempDistance;
+                result[0] = snake.getX();
+                result[1] = snake.getY();
+            }
+            else if( tempDistance == minDistance ){ // compare the distance to the grandpa
+                if( (grandpa.getX()-snake.getX())*(grandpa.getX()-snake.getX()) +
+                        (grandpa.getY()-snake.getY())*(grandpa.getY()-snake.getY())
+                        < (grandpa.getX()-result[0])*(grandpa.getX()-result[0]) +
+                        (grandpa.getY()-result[1])*(grandpa.getY()-result[1])) {
+                    result[0] = snake.getX();
+                    result[1] = snake.getY();
+                }
+            }
+        }
+
+        for( Creatures c : enemy){
+            int tempDistance = (c.getX() - x)*(c.getX() - x)
+                    + (c.getY() - y)*(c.getY() - y);
+            if( tempDistance < minDistance ){
+                minDistance = tempDistance;
+                result[0] = c.getX();
+                result[1] = c.getY();
+            }
+            else if( tempDistance == minDistance ){
+                if( (grandpa.getX()-c.getX())*(grandpa.getX()-c.getX()) +
+                        (grandpa.getY()-c.getY())*(grandpa.getY()-c.getY())
+                        < (grandpa.getX()-result[0])*(grandpa.getX()-result[0]) +
+                        (grandpa.getY()-result[1])*(grandpa.getY()-result[1])) {
+                    result[0] = c.getX();
+                    result[1] = c.getY();
+                }
+            }
+
+        }
+        return result;
     }
 
     private void initFormation(){
@@ -69,37 +126,21 @@ public class Ground extends JPanel {
         URL loc = this.getClass().getClassLoader().getResource("背景2.png");
         ImageIcon iia = new ImageIcon(loc); // Image是抽象类，所以只能通过ImageIcon来创建
         backgroundImage = iia.getImage();
-        pixelWidth = iia.getIconWidth();
-        pixelHeight = iia.getIconHeight();
-        try {
-            backgroundImage = ImageIO.read(new File("背景2.png"));
-        }
-        catch(Exception e){
-
-        }
-
 
     }
 
     private void initCreature(){
 
-
-        grandpa = new Grandpa(0,4,this);
+        grandpa = new Grandpa(0,MAX_Y/2,this);
         grandpa.setImage("爷爷.png");
-        things[0][4] = grandpa;
-
-        snake = new Snake(MAX_X-1,MAX_Y/2,this);
-        snake.setImage("蛇精.png");
-        things[MAX_X-1][MAX_Y/2] = snake;
-
         gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
-        gourdDolls[0] = new GourdDolls(0,1,this);
-        gourdDolls[1] = new GourdDolls(1,2,this);
-        gourdDolls[2] = new GourdDolls(2,3,this);
-        gourdDolls[3] = new GourdDolls(3,4,this);
-        gourdDolls[4] = new GourdDolls(2,5,this);
-        gourdDolls[5] = new GourdDolls(1,6,this);
-        gourdDolls[6] = new GourdDolls(0,7,this);
+        gourdDolls[0] = new GourdDolls(0,1*4,this);
+        gourdDolls[1] = new GourdDolls(1*SPACE/STEP,2*SPACE/STEP,this);
+        gourdDolls[2] = new GourdDolls(2*SPACE/STEP,3*SPACE/STEP,this);
+        gourdDolls[3] = new GourdDolls(3*SPACE/STEP,4*SPACE/STEP,this);
+        gourdDolls[4] = new GourdDolls(2*SPACE/STEP,5*SPACE/STEP,this);
+        gourdDolls[5] = new GourdDolls(1*SPACE/STEP,6*SPACE/STEP,this);
+        gourdDolls[6] = new GourdDolls(0,7*SPACE/STEP,this);
         gourdDolls[0].setImage("大娃.png");
         gourdDolls[1].setImage("二娃.png");
         gourdDolls[2].setImage("三娃.png");
@@ -107,8 +148,9 @@ public class Ground extends JPanel {
         gourdDolls[4].setImage("五娃.png");
         gourdDolls[5].setImage("六娃.png");
         gourdDolls[6].setImage("七娃.png");
-        for(int i = 0;  i < 7 ; ++ i)
-            things[gourdDolls[i].getX()][gourdDolls[i].getY()] = gourdDolls[i];
+
+        snake = new SnakeQueen(MAX_X-1,MAX_Y/2,this);
+        snake.setImage("蛇精.png");
 
     }
 
@@ -119,25 +161,33 @@ public class Ground extends JPanel {
 
     private void actionCreature(){
         Thread[] gourddollsThreads = new Thread[7];
+        Thread grandpaThread = new Thread(grandpa);
+        Thread snakeThread = new Thread(snake);
+
         for(int i = 0 ; i < 7  ; ++ i) {
             gourddollsThreads[i] = new Thread(gourdDolls[i]);
             gourddollsThreads[i].start();
         }
+
+        grandpaThread.start();
+        snakeThread.start();
     }
 
     private void paintGround(Graphics g){
 
         // TODO: add all drawImage() here
 
-        g.drawImage(backgroundImage,0,0, pixelWidth, pixelHeight,this);
-        g.drawImage(grandpa.getImage(),grandpa.getX()*SPACE , grandpa.getY()*SPACE,SPACE,SPACE,this);
+        g.drawImage(backgroundImage,0,0, PIXEL_WIDTH, PIXEL_HEIGHT,this);
+
+        g.drawImage(grandpa.getImage(),grandpa.getX()* STEP, grandpa.getY()* STEP, SPACE, SPACE,this);
+
         for(int i = 0 ; i<7 ; ++ i)
             g.drawImage(gourdDolls[i].getImage(),
-                    gourdDolls[i].getX()*SPACE,gourdDolls[i].getY()*SPACE,
-                    SPACE,SPACE,this);
+                    gourdDolls[i].getX()* STEP,gourdDolls[i].getY()* STEP,
+                    SPACE, SPACE,this);
 
-        g.drawImage(snake.getImage(),snake.getX()*SPACE,snake.getY()*SPACE,
-                SPACE,SPACE,this);
+        g.drawImage(snake.getImage(),snake.getX()* STEP,snake.getY()* STEP,
+                SPACE, SPACE,this);
     }
 
     @Override

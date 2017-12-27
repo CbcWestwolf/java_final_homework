@@ -6,6 +6,7 @@ import nju.java.things.Things;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -13,6 +14,9 @@ import java.util.Random;
  */
 public abstract class Creatures extends Things implements Runnable{
     protected Ground ground; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
+
+    protected int blood = 100; // 血条为 0 ~ 100
+    protected int power ;      // 战斗力，0 ~ 100 ， 每次可打击对方的力量
 
     protected Image image;
 
@@ -52,5 +56,6 @@ public abstract class Creatures extends Things implements Runnable{
     }
 
     public abstract void run();
+
 
 }
