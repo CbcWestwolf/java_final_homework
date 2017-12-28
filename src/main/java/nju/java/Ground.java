@@ -35,13 +35,12 @@ public class Ground extends JPanel {
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
     public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
 
-
     private static boolean stop; // 玩家是否按下暂停键
-    private static Status status = BEGIN; // 3种状态：未开始，打斗中，回放中
-    private static boolean complete; // 是否已经结束战斗
+    private static Status status = WELCOME; // 4种状态：未开始，打斗中，回放中
 
     private Image backgroundImage = null; // 背景图片
 
+    // 爷爷是唯一的
     private Grandpa grandpa = null;
     private GourdDolls [] gourdDolls = null;
     private ArrayList<Good>  goodCreatures = null;
@@ -53,19 +52,18 @@ public class Ground extends JPanel {
     private ArrayList<Bad> badCreatures = null;
 
     private ArrayList<Creatures> deadCreatures = null; // 记录死亡的生物
-    private ArrayList<Thread> creaturesThreads = null;
+    private ArrayList<Thread> creaturesThreads = new ArrayList<Thread>();;
 
     private Timer timer ;
     private ActionListener timerTask ;
 
     public Ground(){
-        addKeyListener(new TAdapter());
-        setFocusable(true);
+        addKeyListener(new TAdapter());// 添加键盘监视器
+        setFocusable(true); // 设置可见
 
+        loadGround(); // 装载场景
 
-        initGround();
-        initCreature();
-
+        initCreature(); // 初始化生物
         initTimer();
         actionCreature();
     }
@@ -97,7 +95,7 @@ public class Ground extends JPanel {
         return badCreatures;
     }
 
-    private void initGround(){
+    private void loadGround(){
         // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
         URL loc = this.getClass().getClassLoader().getResource("背景2.png");
         ImageIcon iia = new ImageIcon(loc); // Image是抽象类，所以只能通过ImageIcon来创建
@@ -164,6 +162,77 @@ public class Ground extends JPanel {
         deadCreatures = new ArrayList<Creatures>();
     }
 
+    public void resetCreature(){
+
+        deadCreatures.clear();
+        goodCreatures.clear();
+        badCreatures.clear();
+
+        // 重置爷爷
+        grandpa.setBlood(100);
+        grandpa.setImage("爷爷.png");
+        grandpa.setX(0);
+        grandpa.setY(MAX_Y/2);
+
+        // 重置葫芦娃
+        for( GourdDolls g : gourdDolls ){
+            g.setBlood(100);
+        }
+        gourdDolls[0].setX(0); gourdDolls[0].setX(4);
+        gourdDolls[1].setX(1*SPACE/STEP); gourdDolls[0].setX(2*SPACE/STEP);
+        gourdDolls[2].setX(2*SPACE/STEP); gourdDolls[0].setX(3*SPACE/STEP);
+        gourdDolls[3].setX(3*SPACE/STEP); gourdDolls[0].setX(4*SPACE/STEP);
+        gourdDolls[4].setX(2*SPACE/STEP); gourdDolls[0].setX(5*SPACE/STEP);
+        gourdDolls[5].setX(1*SPACE/STEP); gourdDolls[0].setX(6*SPACE/STEP);
+        gourdDolls[6].setX(0); gourdDolls[0].setX(7*SPACE/STEP);
+        gourdDolls[0].setImage("大娃.png");
+        gourdDolls[1].setImage("二娃.png");
+        gourdDolls[2].setImage("三娃.png");
+        gourdDolls[3].setImage("四娃.png");
+        gourdDolls[4].setImage("五娃.png");
+        gourdDolls[5].setImage("六娃.png");
+        gourdDolls[6].setImage("七娃.png");
+
+        // 把爷爷和葫芦娃添加到队列中
+        goodCreatures.add(grandpa);
+        for( GourdDolls g : gourdDolls )
+            goodCreatures.add(g);
+
+        // 重置蛇精
+        snake.setBlood(100);
+        snake.setImage("蛇精.png");
+        snake.setX(MAX_X);
+        snake.setY(MAX_Y/2-SPACE/STEP);
+
+        // 重置蝎子精
+        scorpion.setBlood(100);
+        scorpion.setImage("蝎子精.png");
+        scorpion.setX(MAX_X);
+        scorpion.setY(MAX_Y/2+SPACE/STEP);
+
+        // 重置蛤蟆精
+        for(int i = 0 ; i < 7 ; ++ i){
+
+            toads[i].setX(MAX_X);
+            if( i != 3 && i != 5)
+                toads[i].setY(i*SPACE/STEP);
+            else if (i == 3 )
+                toads[i].setY(7*SPACE/STEP);
+            else
+                toads[i].setY(8*SPACE/STEP);
+
+            toads[i].setImage("蛤蟆精.png");
+            toads[i].setBlood(100);
+        }
+
+
+        badCreatures.add(snake);
+        badCreatures.add(scorpion);
+        for(Bad c : toads)
+            badCreatures.add(c);
+
+    }
+
     private void initTimer(){
         timerTask = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -177,7 +246,6 @@ public class Ground extends JPanel {
 
     private void actionCreature(){
 
-        creaturesThreads = new ArrayList<Thread>();
         for(Creatures c : goodCreatures)
             creaturesThreads.add(new Thread(c));
         for(Creatures c : badCreatures)
@@ -194,9 +262,8 @@ public class Ground extends JPanel {
                 +badCreatures.size()+" "
                 +deadCreatures.size());*/
         if( goodCreatures.isEmpty() || badCreatures.isEmpty() ){
-            status = BEGIN;
-            //System.out.println("状态转为BEGIN");
-            stop = true;
+            status = WELCOME;
+            System.out.println("状态转为BEGIN");
             // TODO:弹出游戏信息提示
             return ;
         }
@@ -225,7 +292,6 @@ public class Ground extends JPanel {
 
     private void paintGround(Graphics g){
 
-        // TODO: add all drawImage() here
 
         g.drawImage(backgroundImage,0,0, PIXEL_WIDTH, PIXEL_HEIGHT,this);
 
@@ -252,7 +318,7 @@ public class Ground extends JPanel {
         super.repaint();
     }
 
-    public enum Status { BEGIN, FIGHTING, REPLAYING };
+    public enum Status {WELCOME, FIGHTING, REPLAYING , FINISHED};
 
     class TAdapter extends KeyAdapter{
         @Override
@@ -260,27 +326,30 @@ public class Ground extends JPanel {
             int key = e.getKeyCode();
 
             if(key == KeyEvent.VK_SPACE){ // 开始
-                if( status == BEGIN ){
+                if( status == WELCOME){
                     status = FIGHTING;
                     System.out.println("状态从BEGIN转为FIGHTING");
                 }
+                else if ( status == FINISHED ){
+                    status = WELCOME;
+                    resetCreature();
+                    actionCreature();
+                    // TODO:重绘
+                    System.out.println("状态从FIGHTING转为WELCOME");
+                }
             }
             else if(key == KeyEvent.VK_S){ // 回放
-                if( status == BEGIN ){
+                if( status == WELCOME){
                     status = REPLAYING;
                     System.out.println("状态从BEGIN转为REPLAYING");
                 }
             }
             else if(key == KeyEvent.VK_P){ // 暂停
                 stop = !stop;
-                if( stop)
+                if(stop)
                     System.out.println("暂停！");
                 else
                     System.out.println("解除暂停！");
-            }
-            else if(key == KeyEvent.VK_R){ // 回到主页面
-                status = BEGIN;
-                System.out.println("状态转为BEGIN");
             }
 
             //System.out.println("Status="+status.toString()+" isStop="+stop);
