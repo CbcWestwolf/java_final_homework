@@ -10,7 +10,7 @@ public class Grandpa extends Creatures {
 
     public Grandpa(int x, int y, Ground ground) {
         super(x, y, ground);
-        power = 0; // 爷爷羸弱无比
+        power = 10; // 爷爷羸弱无比
     }
 
     public void run(){
@@ -28,5 +28,9 @@ public class Grandpa extends Creatures {
 
             }
         }
+    }
+
+    public void Walk(){
+
     }
 }

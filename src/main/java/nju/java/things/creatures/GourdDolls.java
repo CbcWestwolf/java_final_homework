@@ -11,6 +11,9 @@ public class GourdDolls extends Creatures{
 
     public GourdDolls(int x, int y, Ground ground) {
         super(x, y, ground);
+        Random random = new Random();
+        blood = 50 + random.nextInt(50);
+        //System.out.println(blood);
     }
 
     public void run(){

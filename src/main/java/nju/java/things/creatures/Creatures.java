@@ -16,7 +16,8 @@ public abstract class Creatures extends Things implements Runnable{
     protected Ground ground; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
 
     protected int blood = 100; // 血条为 0 ~ 100
-    protected int power ;      // 战斗力，0 ~ 100 ， 每次可打击对方的力量
+
+    protected int power = 0;      // 战斗力，0 ~ 100 ， 每次可打击对方的力量
 
     protected Image image;
 
@@ -28,6 +29,24 @@ public abstract class Creatures extends Things implements Runnable{
     public Creatures(int x, int y, Ground ground) {
         super(x,y);
         this.ground = ground;
+    }
+
+
+    public int getPower() {
+        return power;
+    }
+
+
+    public int getBlood() {
+        return blood;
+    }
+
+    public void setBlood(int blood) {
+        this.blood = blood;
+    }
+
+    public boolean isDead(){
+        return blood <= 0;
     }
 
     public Image getImage() {
@@ -45,21 +64,27 @@ public abstract class Creatures extends Things implements Runnable{
         this.setImage(image);
     }
 
-    public boolean move(int x_off, int y_off){ // 成功返回true
+    // 可行性检查在Ground中进行，Creatures不需要进行检查
+    public void move(int x_off, int y_off){
 
         if(Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING )
-            return false;
+            return;
+
+        if( isDead() )
+            return;
 
         int nx = this.getX() + x_off;
         int ny = this.getY() + y_off;
 
-        // TODO: 判断是否成功并返回 true or false
         this.setX(nx);
         this.setY(ny);
-        return true;
+
     }
 
-    public abstract void run();
+    public abstract void run(); // 行动有两种：一种是攻击(Attack)，一种是移动(Walk)
 
+    //public abstract void Attack(); // 攻击敌人
+
+    //public abstract void Walk(); // 向Ground请求位移，Ground检查无误后调用Creatures的位移函数
 
 }
