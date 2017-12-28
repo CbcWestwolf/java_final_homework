@@ -17,6 +17,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static nju.java.Ground.Status.*;
 
@@ -25,10 +26,10 @@ import static nju.java.Ground.Status.*;
  */
 public class Ground extends JPanel {
 
-    public static final int STEP = 20; // 每次移动的距离
-    public static final int SPACE = 4*STEP ; // 图片的边长   (必须是STEP的整数倍）
-    public static final int DISTANCE = 2*STEP; // 攻击范围
-    public static final int TIME_CLOCK = 200; // 线程休眠时间 （毫秒）
+    public static final int STEP = 10; // 每次移动的距离
+    public static final int SPACE = 8*STEP ; // 图片的边长   (必须是STEP的整数倍）
+    public static final int DISTANCE = 4*STEP; // 攻击范围
+    public static final int TIME_CLOCK = 100; // 线程休眠时间 （毫秒）
     public static final int PIXEL_HEIGHT = 720; // 上下的高度（像素点）
     public static final int PIXEL_WIDTH = 1280; // 左右的长度
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
@@ -36,8 +37,8 @@ public class Ground extends JPanel {
 
 
     private static boolean stop; // 玩家是否按下暂停键
-    private static Status status = FIGHTING; // 3种状态：未开始，打斗中，回放中
-
+    private static Status status = BEGIN; // 3种状态：未开始，打斗中，回放中
+    private static boolean complete; // 是否已经结束战斗
 
     private Image backgroundImage = null; // 背景图片
 
@@ -95,74 +96,6 @@ public class Ground extends JPanel {
     public ArrayList<Bad> getBadCreatures(){
         return badCreatures;
     }
-
-
-    // Creatures API: get grandpa's location for toads
-    public int[] getGrandpaLocation(){
-        int[] result = new int[2];
-        if(grandpa == null){
-            result[0] = result[1] = -1;
-        }
-        else {
-            result[0] = grandpa.getX();
-            result[1] = grandpa.getY();
-        }
-        return result;
-    }
-
-    // Creatures API: get nearest toads's location for gourdDolls
-    private int[] getNearestEnemy(int x, int y){
-
-        int[] result = new int[0]; // 目标坐标
-        int minDistance = -1;
-
-        if(scorpion != null ) {
-            minDistance = (scorpion.getX() - x) * (scorpion.getX() - x)
-                    + (scorpion.getY() - y) * (scorpion.getY() - y);
-            result[0] = scorpion.getX();
-            result[1] = scorpion.getY();
-        }
-        if(snake != null ){
-            int tempDistance = (snake.getX() - x) * (snake.getX() - x)
-                    + (snake.getY() - y) * (snake.getY() - y);
-            if( tempDistance < minDistance ){
-                minDistance = tempDistance;
-                result[0] = snake.getX();
-                result[1] = snake.getY();
-            }
-            else if( tempDistance == minDistance ){ // compare the distance to the grandpa
-                if( (grandpa.getX()-snake.getX())*(grandpa.getX()-snake.getX()) +
-                        (grandpa.getY()-snake.getY())*(grandpa.getY()-snake.getY())
-                        < (grandpa.getX()-result[0])*(grandpa.getX()-result[0]) +
-                        (grandpa.getY()-result[1])*(grandpa.getY()-result[1])) {
-                    result[0] = snake.getX();
-                    result[1] = snake.getY();
-                }
-            }
-        }
-
-        for( Creatures c : toads){
-            int tempDistance = (c.getX() - x)*(c.getX() - x)
-                    + (c.getY() - y)*(c.getY() - y);
-            if( tempDistance < minDistance ){
-                minDistance = tempDistance;
-                result[0] = c.getX();
-                result[1] = c.getY();
-            }
-            else if( tempDistance == minDistance ){
-                if( (grandpa.getX()-c.getX())*(grandpa.getX()-c.getX()) +
-                        (grandpa.getY()-c.getY())*(grandpa.getY()-c.getY())
-                        < (grandpa.getX()-result[0])*(grandpa.getX()-result[0]) +
-                        (grandpa.getY()-result[1])*(grandpa.getY()-result[1])) {
-                    result[0] = c.getX();
-                    result[1] = c.getY();
-                }
-            }
-
-        }
-        return result;
-    }
-
 
     private void initGround(){
         // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
@@ -254,7 +187,7 @@ public class Ground extends JPanel {
     }
 
     // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
-    private void checkCreature(){
+    private synchronized void checkCreature(){
 
         /*System.out.println("检查生物:3个列表中的生物个数为:"
                 +goodCreatures.size()+" "
@@ -262,22 +195,29 @@ public class Ground extends JPanel {
                 +deadCreatures.size());*/
         if( goodCreatures.isEmpty() || badCreatures.isEmpty() ){
             status = BEGIN;
-            System.out.println("状态转为BEGIN");
+            //System.out.println("状态转为BEGIN");
             stop = true;
             // TODO:弹出游戏信息提示
+            return ;
         }
-        for( Good c : goodCreatures ){
-            if( c.isDead() ){
-                c.setImage("葫芦娃墓碑.png");
-                deadCreatures.add(c);
-                goodCreatures.remove(c);
+
+        Iterator<Good> g = goodCreatures.iterator();
+        while(g.hasNext()){
+            Good temp = g.next();
+            if(temp.isDead()){
+                temp.setImage("葫芦娃墓碑.png");
+                deadCreatures.add(temp);
+                g.remove();
             }
         }
-        for(Bad c:badCreatures){
-            if( c.isDead() ){
-                c.setImage("妖怪墓碑.png");
-                deadCreatures.add(c);
-                badCreatures.remove(c);
+
+        Iterator<Bad> b = badCreatures.iterator();
+        while(b.hasNext()){
+            Bad temp = b.next();
+            if(temp.isDead()){
+                temp.setImage("妖怪墓碑.png");
+                deadCreatures.add(temp);
+                b.remove();
             }
         }
 
@@ -289,10 +229,12 @@ public class Ground extends JPanel {
 
         g.drawImage(backgroundImage,0,0, PIXEL_WIDTH, PIXEL_HEIGHT,this);
 
-        for( Creatures c : goodCreatures )
+        for( Good c : goodCreatures )
             g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
 
-        for(Creatures c : badCreatures)
+        for( Bad c : badCreatures)
+            g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
+        for( Creatures c : deadCreatures )
             g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
 
     }
@@ -331,6 +273,10 @@ public class Ground extends JPanel {
             }
             else if(key == KeyEvent.VK_P){ // 暂停
                 stop = !stop;
+                if( stop)
+                    System.out.println("暂停！");
+                else
+                    System.out.println("解除暂停！");
             }
             else if(key == KeyEvent.VK_R){ // 回到主页面
                 status = BEGIN;
@@ -349,8 +295,11 @@ public class Ground extends JPanel {
         int distance = distance(attacker,attacked);
         if( distance > 0 && distance <= DISTANCE/STEP ){ // 可以位移
             // 对双方的血量进行减少
-            attacker.setBlood(attacker.getBlood()-attacked.getPower()/2);
-            attacked.setBlood(attacked.getBlood()-attacker.getPower());
+            int attackerBlood = attacker.getBlood()-attacked.getPower()/2;
+            int attackedBlood = attacked.getBlood()-attacker.getPower();
+            System.out.println("攻击者血量降为"+attackerBlood+" 被攻击者血量降为"+attackedBlood);
+            attacker.setBlood(attackerBlood);
+            attacked.setBlood(attackedBlood);
             return true;
         }
         else
@@ -358,8 +307,10 @@ public class Ground extends JPanel {
     }
 
     // Creature API : 攻击成功返回boolean
-    // 检查的重点：是否重合，是否越界
+    // 检查的重点：是否重合，是否越界，是否只有一个值为1
     public boolean requireWalk(Creatures c, int x_off, int y_off){
+        if( x_off * y_off != 0 || Math.abs(x_off+y_off) != 1 )
+            return false;
         int newX = c.getX()+x_off, newY = c.getY() + y_off;
         if(newX < 0 || newX > MAX_X || newY<0 || newY > MAX_Y )
             return false;

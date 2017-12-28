@@ -63,7 +63,7 @@ public abstract class Creatures implements Runnable{
         return blood;
     }
 
-    public void setBlood(int blood) {
+    public synchronized void setBlood(int blood) {
         this.blood = blood;
     }
 
@@ -87,7 +87,7 @@ public abstract class Creatures implements Runnable{
     }
 
     // 可行性检查在Ground中进行，Creatures不需要进行检查
-    public void move(int x_off, int y_off){
+    public synchronized void move(int x_off, int y_off){
 
         if(Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING )
             return;
@@ -104,6 +104,12 @@ public abstract class Creatures implements Runnable{
     }
 
     public abstract void run(); // 行动有两种：一种是攻击(Attack)，一种是移动(Walk)
+
+    protected int attackValue(Creatures c){ // 计算攻击得分
+        int get = c.getBlood() < this.getPower() ? c.getBlood() : this.getPower();
+        int loss = this.blood < (c.getPower()/2) ? this.blood : (c.getPower()/2);
+        return get - loss;
+    }
 
     //public abstract void Attack(); // 攻击敌人
 

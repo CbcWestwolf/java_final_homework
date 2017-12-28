@@ -14,21 +14,5 @@ public class Grandpa extends Good {
         power = 10; // 爷爷羸弱无比
     }
 
-    public void run(){
-        while (!Thread.interrupted()) {
-
-            int newX = this.getX() + 1 ;
-            if( newX < this.ground.MAX_X -1 )
-                this.move(1,0);
-            try {
-
-                Thread.sleep(this.ground.TIME_CLOCK);
-                this.ground.repaint();
-
-            } catch (Exception e) {
-
-            }
-        }
-    }
 
 }
