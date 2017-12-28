@@ -9,9 +9,13 @@ import nju.java.things.creatures.enemies.SnakeQueen;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+
+import static nju.java.Ground.Status.*;
 
 /**
  * Created by cbcwestwolf on 2017/12/26.
@@ -28,19 +32,26 @@ public class Ground extends JPanel {
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
     public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
 
+
+    private static boolean stop; // 玩家是否按下暂停键
+    private static Status status = FIGHTING; // 3种状态：未开始，打斗中，回放中
+
+
     private Image backgroundImage = null; // 背景图片
 
     private Grandpa grandpa = null;
     private GourdDolls [] gourdDolls = null;
+    private Creatures [] goodCreatures = null;
 
     // 蝎子精和蛇精是唯一的
     private SnakeQueen snake = null;
     private ScorpionKing scorpion = null;
     private ArrayList<Creatures> enemy = new ArrayList<Creatures>(); // 小马仔们
+    private Creatures [] badCreatures = null;
 
 
     public Ground(){
-        // TODO:添加键盘监听器
+        addKeyListener(new TAdapter());
         setFocusable(true);
 
         //initFormation();
@@ -50,6 +61,25 @@ public class Ground extends JPanel {
 
         actionCreature();
     }
+
+
+
+    public static boolean isStop() {
+        return stop;
+    }
+
+    public static void setStop(boolean stop) {
+        Ground.stop = stop;
+    }
+
+    public static Status getStatus() {
+        return status;
+    }
+
+    public static void setStatus(Status status) {
+        Ground.status = status;
+    }
+
 
     // Creatures API: get grandpa's location for enemy
     public int[] getGrandpaLocation(){
@@ -166,11 +196,11 @@ public class Ground extends JPanel {
 
         for(int i = 0 ; i < 7  ; ++ i) {
             gourddollsThreads[i] = new Thread(gourdDolls[i]);
-            //gourddollsThreads[i].start();
+            gourddollsThreads[i].start();
         }
 
-        //grandpaThread.start();
-        //snakeThread.start();
+        grandpaThread.start();
+        snakeThread.start();
     }
 
     private void paintGround(Graphics g){
@@ -195,14 +225,40 @@ public class Ground extends JPanel {
         super.paint(g);
         paintGround(g);
 
-        // printFormation();
+
     }
 
     @Override
     public void repaint(){
-        // TODO: 添加更新currentFormation
 
         super.repaint();
+    }
+
+    public enum Status { BEGIN, FIGHTING, REPLAYING };
+
+    class TAdapter extends KeyAdapter{
+        @Override
+        public void keyPressed(KeyEvent e){
+            int key = e.getKeyCode();
+
+            if(key == KeyEvent.VK_SPACE){
+                if( status == BEGIN ){
+                    status = FIGHTING;
+                }
+            }
+            else if(key == KeyEvent.VK_R){
+                if( status == BEGIN ){
+                    status = REPLAYING;
+                }
+            }
+            else if(key == KeyEvent.VK_P){
+                stop = !stop;
+            }
+
+            System.out.println("Status="+status.toString()+" isStop="+stop);
+
+            repaint();
+        }
     }
 
 }

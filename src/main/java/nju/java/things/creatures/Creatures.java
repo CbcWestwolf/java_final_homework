@@ -46,13 +46,17 @@ public abstract class Creatures extends Things implements Runnable{
     }
 
     public boolean move(int x_off, int y_off){ // 成功返回true
+
+        if(Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING )
+            return false;
+
         int nx = this.getX() + x_off;
         int ny = this.getY() + y_off;
 
         // TODO: 判断是否成功并返回 true or false
         this.setX(nx);
         this.setY(ny);
-        return false;
+        return true;
     }
 
     public abstract void run();
