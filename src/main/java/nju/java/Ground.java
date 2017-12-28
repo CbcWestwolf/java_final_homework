@@ -22,7 +22,6 @@ import static nju.java.Ground.Status.*;
  */
 public class Ground extends JPanel {
 
-
     public static final int STEP = 20; // 每次移动的距离
     public static final int SPACE = 4*STEP ; // 图片的边长   (必须是STEP的整数倍）
     public static final int DISTANCE = 2*STEP; // 攻击范围
@@ -41,23 +40,22 @@ public class Ground extends JPanel {
 
     private Grandpa grandpa = null;
     private GourdDolls [] gourdDolls = null;
-    private Creatures [] goodCreatures = null;
+    private ArrayList<Creatures>  goodCreatures = null;
 
     // 蝎子精和蛇精是唯一的
     private SnakeQueen snake = null;
     private ScorpionKing scorpion = null;
     private ArrayList<Creatures> enemy = new ArrayList<Creatures>(); // 小马仔们
-    private Creatures [] badCreatures = null;
+    private ArrayList<Creatures> badCreatures = null;
 
+    private ArrayList<Thread> creaturesThreads = null;
 
     public Ground(){
         addKeyListener(new TAdapter());
         setFocusable(true);
 
-        //initFormation();
         initGround();
         initCreature();
-        //readFormation();
 
         actionCreature();
     }
@@ -147,10 +145,6 @@ public class Ground extends JPanel {
         return result;
     }
 
-    private void initFormation(){
-
-    }
-
     private void initGround(){
         // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
         URL loc = this.getClass().getClassLoader().getResource("背景2.png");
@@ -161,8 +155,11 @@ public class Ground extends JPanel {
 
     private void initCreature(){
 
+        // 初始化爷爷
         grandpa = new Grandpa(0,MAX_Y/2,this);
         grandpa.setImage("爷爷.png");
+
+        // 初始化葫芦娃
         gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
         gourdDolls[0] = new GourdDolls(0,1*4,this);
         gourdDolls[1] = new GourdDolls(1*SPACE/STEP,2*SPACE/STEP,this);
@@ -179,28 +176,37 @@ public class Ground extends JPanel {
         gourdDolls[5].setImage("六娃.png");
         gourdDolls[6].setImage("七娃.png");
 
-        snake = new SnakeQueen(MAX_X,MAX_Y/2,this);
+        // 把爷爷和葫芦娃添加到队列中
+        goodCreatures = new ArrayList<Creatures>();
+        goodCreatures.add(grandpa);
+        for( GourdDolls g : gourdDolls )
+            goodCreatures.add(g);
+
+        // 初始化蛇精
+        snake = new SnakeQueen(MAX_X,MAX_Y/2-SPACE/STEP,this);
         snake.setImage("蛇精.png");
 
+        // 初始化蝎子精
+        scorpion =  new ScorpionKing(MAX_X,MAX_Y/2+SPACE/STEP,this);
+        scorpion.setImage("蝎子精.png");
+
+        // TODO:初始化蛤蟆精
+
+        badCreatures = new ArrayList<Creatures>();
+        badCreatures.add(snake);
+        badCreatures.add(scorpion);
     }
 
-    private void readFormation(){
-
-
-    }
 
     private void actionCreature(){
-        Thread[] gourddollsThreads = new Thread[7];
-        Thread grandpaThread = new Thread(grandpa);
-        Thread snakeThread = new Thread(snake);
 
-        for(int i = 0 ; i < 7  ; ++ i) {
-            gourddollsThreads[i] = new Thread(gourdDolls[i]);
-            gourddollsThreads[i].start();
-        }
-
-        grandpaThread.start();
-        snakeThread.start();
+        creaturesThreads = new ArrayList<Thread>();
+        for(Creatures c : goodCreatures)
+            creaturesThreads.add(new Thread(c));
+        for(Creatures c : badCreatures)
+            creaturesThreads.add(new Thread(c));
+        for(Thread t : creaturesThreads)
+            t.start();
     }
 
     private void paintGround(Graphics g){
@@ -209,22 +215,18 @@ public class Ground extends JPanel {
 
         g.drawImage(backgroundImage,0,0, PIXEL_WIDTH, PIXEL_HEIGHT,this);
 
-        g.drawImage(grandpa.getImage(),grandpa.getX()* STEP, grandpa.getY()* STEP, SPACE, SPACE,this);
+        for( Creatures c : goodCreatures )
+            g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
 
-        for(int i = 0 ; i<7 ; ++ i)
-            g.drawImage(gourdDolls[i].getImage(),
-                    gourdDolls[i].getX()* STEP,gourdDolls[i].getY()* STEP,
-                    SPACE, SPACE,this);
+        for(Creatures c : badCreatures)
+            g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
 
-        g.drawImage(snake.getImage(),snake.getX()* STEP,snake.getY()* STEP,
-                SPACE, SPACE,this);
     }
 
     @Override
     public void paint(Graphics g){
         super.paint(g);
         paintGround(g);
-
 
     }
 
