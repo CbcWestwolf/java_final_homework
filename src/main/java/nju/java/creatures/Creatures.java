@@ -1,7 +1,7 @@
-package nju.java.things.creatures;
+package nju.java.creatures;
 
 import nju.java.Ground;
-import nju.java.things.Things;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,28 @@ import java.util.Random;
 /**
  * Created by cbcwestwolf on 2017/12/26.
  */
-public abstract class Creatures extends Things implements Runnable{
+public abstract class Creatures implements Runnable{
+
+    private int x ; // [ 0 , MAX_X ]
+    private int y ; // [ 0 , MAX_Y ]
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+
     protected Ground ground; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
 
     protected int blood = 100; // 血条为 0 ~ 100
@@ -22,12 +43,13 @@ public abstract class Creatures extends Things implements Runnable{
     protected Image image;
 
     public Creatures(){
-        super(0,0);
+        this.x = this.y = 0;
         this.ground = null;
     }
 
     public Creatures(int x, int y, Ground ground) {
-        super(x,y);
+        this.x = x ;
+        this.y = y;
         this.ground = ground;
     }
 

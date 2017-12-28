@@ -1,11 +1,13 @@
 package nju.java;
 
-import nju.java.things.creatures.Creatures;
-import nju.java.things.creatures.GourdDolls;
-import nju.java.things.creatures.Grandpa;
-import nju.java.things.creatures.enemies.ScorpionKing;
-import nju.java.things.creatures.enemies.SnakeQueen;
-import nju.java.things.creatures.enemies.Toad;
+import nju.java.creatures.Creatures;
+import nju.java.creatures.bad.Bad;
+import nju.java.creatures.good.Good;
+import nju.java.creatures.good.GourdDolls;
+import nju.java.creatures.good.Grandpa;
+import nju.java.creatures.bad.ScorpionKing;
+import nju.java.creatures.bad.SnakeQueen;
+import nju.java.creatures.bad.Toad;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -42,13 +43,13 @@ public class Ground extends JPanel {
 
     private Grandpa grandpa = null;
     private GourdDolls [] gourdDolls = null;
-    private ArrayList< Creatures>  goodCreatures = null;
+    private ArrayList<Good>  goodCreatures = null;
 
     // 蝎子精和蛇精是唯一的
     private SnakeQueen snake = null;
     private ScorpionKing scorpion = null;
     private Toad[] toads = null; // 小马仔们
-    private ArrayList< Creatures> badCreatures = null;
+    private ArrayList<Bad> badCreatures = null;
 
     private ArrayList<Creatures> deadCreatures = null; // 记录死亡的生物
     private ArrayList<Thread> creaturesThreads = null;
@@ -87,11 +88,11 @@ public class Ground extends JPanel {
     }
 
     // Creatures API
-    public ArrayList<Creatures> getGoodCreatures(){
+    public ArrayList<Good> getGoodCreatures(){
         return goodCreatures;
     }
 
-    public ArrayList< Creatures> getBadCreatures(){
+    public ArrayList<Bad> getBadCreatures(){
         return badCreatures;
     }
 
@@ -195,7 +196,7 @@ public class Ground extends JPanel {
         gourdDolls[6].setImage("七娃.png");
 
         // 把爷爷和葫芦娃添加到队列中
-        goodCreatures = new ArrayList<Creatures>();
+        goodCreatures = new ArrayList<Good>();
         goodCreatures.add(grandpa);
         for( GourdDolls g : gourdDolls )
             goodCreatures.add(g);
@@ -221,10 +222,10 @@ public class Ground extends JPanel {
             toads[i].setImage("蛤蟆精.png");
         }
 
-        badCreatures = new ArrayList<Creatures>();
+        badCreatures = new ArrayList<Bad>();
         badCreatures.add(snake);
         badCreatures.add(scorpion);
-        for(Creatures c : toads)
+        for(Bad c : toads)
             badCreatures.add(c);
 
         deadCreatures = new ArrayList<Creatures>();
@@ -265,14 +266,14 @@ public class Ground extends JPanel {
             stop = true;
             // TODO:弹出游戏信息提示
         }
-        for( Creatures c : goodCreatures ){
+        for( Good c : goodCreatures ){
             if( c.isDead() ){
                 c.setImage("葫芦娃墓碑.png");
                 deadCreatures.add(c);
                 goodCreatures.remove(c);
             }
         }
-        for(Creatures c:badCreatures){
+        for(Bad c:badCreatures){
             if( c.isDead() ){
                 c.setImage("妖怪墓碑.png");
                 deadCreatures.add(c);
@@ -345,10 +346,7 @@ public class Ground extends JPanel {
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离
     public boolean requireAttack(Creatures attacker, Creatures attacked){
-        int temp = DISTANCE/STEP;
-        int x1 = attacked.getX() , x2 = attacker.getX();
-        int y1 = attacked.getY() , y2 = attacker.getY();
-        int distance = (x1>x2?x1-x2:x2-x1) + (y1>y2?y1-y2:y2-y1);
+        int distance = distance(attacker,attacked);
         if( distance > 0 && distance <= DISTANCE/STEP ){ // 可以位移
             // 对双方的血量进行减少
             attacker.setBlood(attacker.getBlood()-attacked.getPower()/2);
@@ -382,6 +380,16 @@ public class Ground extends JPanel {
         c.setX(newX);
         c.setY(newY);
         return true;
+    }
+
+    // Creatures API:
+    // 返回两个生物体在坐标轴上的距离(x距离+y距离
+    public final int distance(Creatures a, Creatures b){
+        int minX = a.getX()<b.getX() ? a.getX():b.getX();
+        int maxX = a.getX()<b.getX() ? b.getX():a.getX();
+        int minY = a.getY()<b.getY() ? a.getY():b.getY();
+        int maxY = a.getY()<b.getY() ? b.getY():a.getY();
+        return maxX - minX + maxY - minY;
     }
 
 }

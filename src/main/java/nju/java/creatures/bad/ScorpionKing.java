@@ -1,15 +1,13 @@
-package nju.java.things.creatures.enemies;
+package nju.java.creatures.bad;
 
 import nju.java.Ground;
-import nju.java.things.creatures.Creatures;
+import nju.java.creatures.Creatures;
 
 /**
  * Created by cbcwestwolf on 2017/12/27.
  */
-public class ScorpionKing extends Creatures {
-    public ScorpionKing() {
-        power = 80;
-    }
+public class ScorpionKing extends Bad {
+
 
     public ScorpionKing(int x, int y , Ground ground){
         super(x,y,ground);
