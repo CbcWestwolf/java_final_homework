@@ -26,34 +26,42 @@ import static nju.java.Ground.Status.*;
  */
 public class Ground extends JPanel {
 
+    // 常量定义
     public static final int STEP = 10; // 每次移动的距离
     public static final int SPACE = 8*STEP ; // 图片的边长   (必须是STEP的整数倍）
-    public static final int DISTANCE = 4*STEP; // 攻击范围
+    public static final int DISTANCE = 6*STEP; // 攻击范围
     public static final int TIME_CLOCK = 100; // 线程休眠时间 （毫秒）
     public static final int PIXEL_HEIGHT = 720; // 上下的高度（像素点）
     public static final int PIXEL_WIDTH = 1280; // 左右的长度
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
     public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
 
+    // 状态定义
     private static boolean stop; // 玩家是否按下暂停键
     private static Status status = WELCOME; // 4种状态：未开始，打斗中，回放中
 
+    // 背景图片
     private Image backgroundImage = null; // 背景图片
 
-    // 爷爷是唯一的
-    private Grandpa grandpa = null;
+    // 正方
+    private Grandpa grandpa = null;// 爷爷是唯一的
     private GourdDolls [] gourdDolls = null;
     private ArrayList<Good>  goodCreatures = null;
 
+    // 反方
     // 蝎子精和蛇精是唯一的
     private SnakeQueen snake = null;
     private ScorpionKing scorpion = null;
     private Toad[] toads = null; // 小马仔们
     private ArrayList<Bad> badCreatures = null;
 
+    // 死者
     private ArrayList<Creatures> deadCreatures = null; // 记录死亡的生物
-    private ArrayList<Thread> creaturesThreads = new ArrayList<Thread>();;
 
+    // 线程，每个生物对应一个线程
+    private ArrayList<Thread> creaturesThreads = null;;
+
+    // 计时器和事件监听器
     private Timer timer ;
     private ActionListener timerTask ;
 
@@ -61,11 +69,11 @@ public class Ground extends JPanel {
         addKeyListener(new TAdapter());// 添加键盘监视器
         setFocusable(true); // 设置可见
 
-        loadGround(); // 装载场景
+        loadBackground(); // 装载场景
 
         initCreature(); // 初始化生物
         initTimer();
-        actionCreature();
+        initThread();
     }
 
 
@@ -95,7 +103,7 @@ public class Ground extends JPanel {
         return badCreatures;
     }
 
-    private void loadGround(){
+    private void loadBackground(){
         // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
         URL loc = this.getClass().getClassLoader().getResource("背景2.png");
         ImageIcon iia = new ImageIcon(loc); // Image是抽象类，所以只能通过ImageIcon来创建
@@ -225,7 +233,7 @@ public class Ground extends JPanel {
             toads[i].setBlood(100);
         }
 
-
+        // 把反方添加到队列中
         badCreatures.add(snake);
         badCreatures.add(scorpion);
         for(Bad c : toads)
@@ -244,15 +252,23 @@ public class Ground extends JPanel {
         timer.start();
     }
 
-    private void actionCreature(){
+    private void initThread() {
 
-        for(Creatures c : goodCreatures)
+        creaturesThreads = new ArrayList<Thread>();
+        for (Creatures c : goodCreatures) {
             creaturesThreads.add(new Thread(c));
-        for(Creatures c : badCreatures)
+            c.setThread(creaturesThreads.get(creaturesThreads.size()-1));
+        }
+        for (Creatures c : badCreatures) {
             creaturesThreads.add(new Thread(c));
-        for(Thread t : creaturesThreads)
+            c.setThread(creaturesThreads.get(creaturesThreads.size()-1));
+        }
+        for (Thread t : creaturesThreads)
             t.start();
+
     }
+
+
 
     // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
     private synchronized void checkCreature(){
@@ -261,11 +277,12 @@ public class Ground extends JPanel {
                 +goodCreatures.size()+" "
                 +badCreatures.size()+" "
                 +deadCreatures.size());*/
-        if( goodCreatures.isEmpty() || badCreatures.isEmpty() ){
-            status = WELCOME;
-            System.out.println("状态转为BEGIN");
+        if( status == FIGHTING && ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
+            status = FINISHED;
+            System.out.println("FINISHED");
             // TODO:弹出游戏信息提示
-            return ;
+            return;
+
         }
 
         Iterator<Good> g = goodCreatures.iterator();
@@ -328,20 +345,16 @@ public class Ground extends JPanel {
             if(key == KeyEvent.VK_SPACE){ // 开始
                 if( status == WELCOME){
                     status = FIGHTING;
-                    System.out.println("状态从BEGIN转为FIGHTING");
-                }
-                else if ( status == FINISHED ){
-                    status = WELCOME;
-                    resetCreature();
-                    actionCreature();
-                    // TODO:重绘
-                    System.out.println("状态从FIGHTING转为WELCOME");
+                    System.out.println("状态从WELCOME转为FIGHTING");
                 }
             }
             else if(key == KeyEvent.VK_S){ // 回放
                 if( status == WELCOME){
                     status = REPLAYING;
-                    System.out.println("状态从BEGIN转为REPLAYING");
+                    System.out.println("状态从WELCOME转为REPLAYING");
+                }
+                else if( status == FINISHED ){
+                    // TODO
                 }
             }
             else if(key == KeyEvent.VK_P){ // 暂停

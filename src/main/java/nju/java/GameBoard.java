@@ -16,10 +16,9 @@ public class GameBoard extends JFrame{
         add(ground);  // 在GameBourd
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // TODO: 调整背景大小
         setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50);
         setLocationRelativeTo(null);
-        setTitle("Ground");
+        setTitle("葫芦娃");
     }
 
     public static void main(String[] arg){

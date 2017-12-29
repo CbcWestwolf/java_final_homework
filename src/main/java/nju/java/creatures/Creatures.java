@@ -16,6 +16,16 @@ public abstract class Creatures implements Runnable{
 
     private int x ; // [ 0 , MAX_X ]
     private int y ; // [ 0 , MAX_Y ]
+    public Thread thread = null;
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
 
     public int getX() {
         return x;
