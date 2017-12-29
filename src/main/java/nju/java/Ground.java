@@ -240,8 +240,7 @@ public class Ground extends JPanel {
         timerTask = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // TODO:添加更多定时检查
-                checkCreature();
-                repaint();
+
             }
         };
         timer = new Timer(TIME_CLOCK,timerTask);
@@ -265,7 +264,7 @@ public class Ground extends JPanel {
     }
 
     // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
-    private synchronized void checkCreature(){
+    public synchronized void checkCreature(){
 
         /*System.out.println("检查生物:3个列表中的生物个数为:"
                 +goodCreatures.size()+" "
@@ -308,7 +307,7 @@ public class Ground extends JPanel {
 
     }
 
-    private void paintGround(Graphics g) {
+    private synchronized void  paintGround(Graphics g) {
 
         g.drawImage(backgroundImage, 0, 0, PIXEL_WIDTH, PIXEL_HEIGHT, this);
 
@@ -471,7 +470,7 @@ public class Ground extends JPanel {
                     status = FIGHTING;
                     initCreature(); // 初始化生物
                     initThread();
-                    initTimer();
+                    //initTimer();
 
                     System.out.println("状态从WELCOME转为FIGHTING");
 
@@ -489,7 +488,7 @@ public class Ground extends JPanel {
                     status = REPLAYING;
                     System.out.println("状态从WELCOME转为REPLAYING");
                     initCreature(); // 初始化生物
-                    initTimer();
+                    //initTimer();
                     replaying();
 
                 }

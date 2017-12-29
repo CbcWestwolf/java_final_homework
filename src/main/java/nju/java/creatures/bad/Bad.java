@@ -89,6 +89,7 @@ public class Bad extends Creatures {
 
 
                 Thread.sleep(this.ground.TIME_CLOCK);
+                this.ground.checkCreature();
                 this.ground.repaint();
             } catch (Exception e) {
 

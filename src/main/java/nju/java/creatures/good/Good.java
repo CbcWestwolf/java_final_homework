@@ -58,6 +58,7 @@ public class Good extends Creatures {
                 }
             }
                 Thread.sleep(this.ground.TIME_CLOCK);
+                this.ground.checkCreature();
                 this.ground.repaint();
 
 
