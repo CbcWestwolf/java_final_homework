@@ -15,8 +15,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.*;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import static nju.java.Ground.Status.*;
@@ -35,6 +38,12 @@ public class Ground extends JPanel {
     public static final int PIXEL_WIDTH = 1280; // 左右的长度
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
     public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
+    public static final int CREATURE_NUM = 17; // 所有生物的数量
+    public static final String SUFFIX = ".fight";
+
+    // 读写的文件
+    private File writeFile = null;
+    private File readFile = null;
 
     // 状态定义
     private static boolean stop; // 玩家是否按下暂停键
@@ -66,17 +75,11 @@ public class Ground extends JPanel {
     private ActionListener timerTask ;
 
     public Ground(){
-        addKeyListener(new TAdapter());// 添加键盘监视器
         setFocusable(true); // 设置可见
-
+        addKeyListener(new TAdapter());// 添加键盘监视器
         loadBackground(); // 装载场景
-
-        initCreature(); // 初始化生物
-        initTimer();
-        initThread();
+        repaint();        // 绘制场景
     }
-
-
 
     public static boolean isStop() {
         return stop;
@@ -119,13 +122,13 @@ public class Ground extends JPanel {
 
         // 初始化葫芦娃
         gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
-        gourdDolls[0] = new GourdDolls(0,1*4,this);
-        gourdDolls[1] = new GourdDolls(1*SPACE/STEP,2*SPACE/STEP,this);
-        gourdDolls[2] = new GourdDolls(2*SPACE/STEP,3*SPACE/STEP,this);
-        gourdDolls[3] = new GourdDolls(3*SPACE/STEP,4*SPACE/STEP,this);
-        gourdDolls[4] = new GourdDolls(2*SPACE/STEP,5*SPACE/STEP,this);
-        gourdDolls[5] = new GourdDolls(1*SPACE/STEP,6*SPACE/STEP,this);
-        gourdDolls[6] = new GourdDolls(0,7*SPACE/STEP,this);
+        gourdDolls[0] = new GourdDolls(0,1*4,this,0);
+        gourdDolls[1] = new GourdDolls(1*SPACE/STEP,2*SPACE/STEP,this,1);
+        gourdDolls[2] = new GourdDolls(2*SPACE/STEP,3*SPACE/STEP,this,2);
+        gourdDolls[3] = new GourdDolls(3*SPACE/STEP,4*SPACE/STEP,this,3);
+        gourdDolls[4] = new GourdDolls(2*SPACE/STEP,5*SPACE/STEP,this,4);
+        gourdDolls[5] = new GourdDolls(1*SPACE/STEP,6*SPACE/STEP,this,5);
+        gourdDolls[6] = new GourdDolls(0,7*SPACE/STEP,this,6);
         gourdDolls[0].setImage("大娃.png");
         gourdDolls[1].setImage("二娃.png");
         gourdDolls[2].setImage("三娃.png");
@@ -137,8 +140,10 @@ public class Ground extends JPanel {
         // 把爷爷和葫芦娃添加到队列中
         goodCreatures = new ArrayList<Good>();
         goodCreatures.add(grandpa);
-        for( GourdDolls g : gourdDolls )
+        for( GourdDolls g : gourdDolls ) {
             goodCreatures.add(g);
+            //System.out.println(g);
+        }
 
         // 初始化蛇精
         snake = new SnakeQueen(MAX_X,MAX_Y/2-SPACE/STEP,this);
@@ -152,11 +157,11 @@ public class Ground extends JPanel {
         for(int i = 0 ; i < 7 ; ++ i){
 
             if( i != 3 && i != 5)
-                toads[i] = new Toad(MAX_X,i*SPACE/STEP,this);
+                toads[i] = new Toad(MAX_X,i*SPACE/STEP,this,i);
             else if (i == 3 )
-                toads[i] = new Toad(MAX_X,7*SPACE/STEP,this);
+                toads[i] = new Toad(MAX_X,7*SPACE/STEP,this,i);
             else
-                toads[i] = new Toad(MAX_X,8*SPACE/STEP,this);
+                toads[i] = new Toad(MAX_X,8*SPACE/STEP,this,i);
 
             toads[i].setImage("蛤蟆精.png");
         }
@@ -164,81 +169,12 @@ public class Ground extends JPanel {
         badCreatures = new ArrayList<Bad>();
         badCreatures.add(snake);
         badCreatures.add(scorpion);
-        for(Bad c : toads)
+        for(Bad c : toads) {
             badCreatures.add(c);
+            //System.out.println(c);
+        }
 
         deadCreatures = new ArrayList<Creatures>();
-    }
-
-    public void resetCreature(){
-
-        deadCreatures.clear();
-        goodCreatures.clear();
-        badCreatures.clear();
-
-        // 重置爷爷
-        grandpa.setBlood(100);
-        grandpa.setImage("爷爷.png");
-        grandpa.setX(0);
-        grandpa.setY(MAX_Y/2);
-
-        // 重置葫芦娃
-        for( GourdDolls g : gourdDolls ){
-            g.setBlood(100);
-        }
-        gourdDolls[0].setX(0); gourdDolls[0].setX(4);
-        gourdDolls[1].setX(1*SPACE/STEP); gourdDolls[0].setX(2*SPACE/STEP);
-        gourdDolls[2].setX(2*SPACE/STEP); gourdDolls[0].setX(3*SPACE/STEP);
-        gourdDolls[3].setX(3*SPACE/STEP); gourdDolls[0].setX(4*SPACE/STEP);
-        gourdDolls[4].setX(2*SPACE/STEP); gourdDolls[0].setX(5*SPACE/STEP);
-        gourdDolls[5].setX(1*SPACE/STEP); gourdDolls[0].setX(6*SPACE/STEP);
-        gourdDolls[6].setX(0); gourdDolls[0].setX(7*SPACE/STEP);
-        gourdDolls[0].setImage("大娃.png");
-        gourdDolls[1].setImage("二娃.png");
-        gourdDolls[2].setImage("三娃.png");
-        gourdDolls[3].setImage("四娃.png");
-        gourdDolls[4].setImage("五娃.png");
-        gourdDolls[5].setImage("六娃.png");
-        gourdDolls[6].setImage("七娃.png");
-
-        // 把爷爷和葫芦娃添加到队列中
-        goodCreatures.add(grandpa);
-        for( GourdDolls g : gourdDolls )
-            goodCreatures.add(g);
-
-        // 重置蛇精
-        snake.setBlood(100);
-        snake.setImage("蛇精.png");
-        snake.setX(MAX_X);
-        snake.setY(MAX_Y/2-SPACE/STEP);
-
-        // 重置蝎子精
-        scorpion.setBlood(100);
-        scorpion.setImage("蝎子精.png");
-        scorpion.setX(MAX_X);
-        scorpion.setY(MAX_Y/2+SPACE/STEP);
-
-        // 重置蛤蟆精
-        for(int i = 0 ; i < 7 ; ++ i){
-
-            toads[i].setX(MAX_X);
-            if( i != 3 && i != 5)
-                toads[i].setY(i*SPACE/STEP);
-            else if (i == 3 )
-                toads[i].setY(7*SPACE/STEP);
-            else
-                toads[i].setY(8*SPACE/STEP);
-
-            toads[i].setImage("蛤蟆精.png");
-            toads[i].setBlood(100);
-        }
-
-        // 把反方添加到队列中
-        badCreatures.add(snake);
-        badCreatures.add(scorpion);
-        for(Bad c : toads)
-            badCreatures.add(c);
-
     }
 
     private void initTimer(){
@@ -268,8 +204,6 @@ public class Ground extends JPanel {
 
     }
 
-
-
     // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
     private synchronized void checkCreature(){
 
@@ -282,7 +216,6 @@ public class Ground extends JPanel {
             System.out.println("FINISHED");
             // TODO:弹出游戏信息提示
             return;
-
         }
 
         Iterator<Good> g = goodCreatures.iterator();
@@ -305,20 +238,29 @@ public class Ground extends JPanel {
             }
         }
 
+        if( status == FIGHTING ) {
+            writeFile();
+            //System.out.println("Good:"+goodCreatures.size()+                " Bad:"+badCreatures.size()+                " Dead:"+deadCreatures.size());
+        }
+
     }
 
-    private void paintGround(Graphics g){
+    private void paintGround(Graphics g) {
+
+        g.drawImage(backgroundImage, 0, 0, PIXEL_WIDTH, PIXEL_HEIGHT, this);
+
+        if ( goodCreatures != null )
+            for (Good c : goodCreatures)
+                g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
 
 
-        g.drawImage(backgroundImage,0,0, PIXEL_WIDTH, PIXEL_HEIGHT,this);
+        if( badCreatures != null )
+            for (Bad c : badCreatures)
+                g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
 
-        for( Good c : goodCreatures )
-            g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
-
-        for( Bad c : badCreatures)
-            g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
-        for( Creatures c : deadCreatures )
-            g.drawImage(c.getImage(),c.getX()*STEP,c.getY()*STEP,SPACE,SPACE,this);
+        if( deadCreatures != null)
+            for (Creatures c : deadCreatures)
+                g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
 
     }
 
@@ -326,50 +268,14 @@ public class Ground extends JPanel {
     public void paint(Graphics g){
         super.paint(g);
         paintGround(g);
-
     }
 
     @Override
     public void repaint(){
-
         super.repaint();
     }
 
     public enum Status {WELCOME, FIGHTING, REPLAYING , FINISHED};
-
-    class TAdapter extends KeyAdapter{
-        @Override
-        public void keyPressed(KeyEvent e){
-            int key = e.getKeyCode();
-
-            if(key == KeyEvent.VK_SPACE){ // 开始
-                if( status == WELCOME){
-                    status = FIGHTING;
-                    System.out.println("状态从WELCOME转为FIGHTING");
-                }
-            }
-            else if(key == KeyEvent.VK_S){ // 回放
-                if( status == WELCOME){
-                    status = REPLAYING;
-                    System.out.println("状态从WELCOME转为REPLAYING");
-                }
-                else if( status == FINISHED ){
-                    // TODO
-                }
-            }
-            else if(key == KeyEvent.VK_P){ // 暂停
-                stop = !stop;
-                if(stop)
-                    System.out.println("暂停！");
-                else
-                    System.out.println("解除暂停！");
-            }
-
-            //System.out.println("Status="+status.toString()+" isStop="+stop);
-
-            repaint();
-        }
-    }
 
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离
@@ -423,6 +329,97 @@ public class Ground extends JPanel {
         int minY = a.getY()<b.getY() ? a.getY():b.getY();
         int maxY = a.getY()<b.getY() ? b.getY():a.getY();
         return maxX - minX + maxY - minY;
+    }
+
+    private void writeFile(){
+        // 寻找一个可用的文件
+        if (writeFile == null){
+            Date now = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+            String str = "save"+File.separator+simpleDateFormat.format(now)+SUFFIX;
+            // System.out.println(str);
+            writeFile = new File(str);
+        }
+
+        // 把三个ArrayList中的对象都写进文件
+        try {
+            OutputStream outputStream = new FileOutputStream(writeFile,true);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
+            if( ! goodCreatures.isEmpty() )
+                for( Creatures g : goodCreatures )
+                    objectOutputStream.writeObject(g);
+            if( ! badCreatures.isEmpty() )
+                for( Creatures b : badCreatures )
+                    objectOutputStream.writeObject(b);
+            if( ! deadCreatures.isEmpty() )
+                for( Creatures d : deadCreatures )
+                    objectOutputStream.writeObject(d);
+
+
+
+            objectOutputStream.close();
+            outputStream.close();
+        }
+        catch (FileNotFoundException e){
+
+        }
+        catch (IOException e){
+
+        }
+
+    }
+
+    class TAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e){
+            int key = e.getKeyCode();
+            if (key == KeyEvent.VK_SPACE){ // 开始
+                if( status == WELCOME){
+
+                    /*初始化生物、计时器和线程*/
+                    initCreature(); // 初始化生物
+                    initThread();
+                    initTimer();
+                    status = FIGHTING;
+                    System.out.println("状态从WELCOME转为FIGHTING");
+
+                }
+            }
+            else if(key == KeyEvent.VK_L){ // 回放
+                if( status == WELCOME || status == FINISHED ){
+                    status = REPLAYING;
+
+                    replaying();
+
+                    System.out.println("状态从WELCOME转为REPLAYING");
+                }
+            }
+            else if(key == KeyEvent.VK_P){ // 暂停
+                stop = !stop;
+                if(stop)
+                    System.out.println("暂停！");
+                else
+                    System.out.println("解除暂停！");
+            }
+            else if( key == KeyEvent.VK_ESCAPE )
+                System.exit(0);
+
+            //System.out.println("Status="+status.toString()+" isStop="+stop);
+            repaint();
+        }
+    }
+
+    private void replaying(){
+
+        JFileChooser jFileChooser = new JFileChooser(new File("save"));
+        jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
+        jFileChooser.showDialog(null,null);
+        readFile = jFileChooser.getSelectedFile();
+        if( readFile != null ) {
+            // System.out.println(f.toString());
+
+        }
     }
 
 }

@@ -67,6 +67,11 @@ public class Good extends Creatures {
         }
     }
 
+    @Override
+    public String toString(){
+        return "正方方";
+    }
+
     // 寻找可攻击的敌人
     public ArrayList<Bad> getAttackable(){
         ArrayList<Bad> all = this.ground.getBadCreatures();

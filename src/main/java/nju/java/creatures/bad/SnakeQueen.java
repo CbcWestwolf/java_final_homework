@@ -12,7 +12,12 @@ public class SnakeQueen extends Bad {
     public SnakeQueen(int x, int y, Ground ground) {
         super(x, y, ground);
         power = 20;
+
     }
 
+    @Override
+    public String toString(){
+        return "蛇精";
+    }
 
 }

@@ -14,5 +14,8 @@ public class ScorpionKing extends Bad {
         power = 80;
     }
 
-
+    @Override
+    public String toString(){
+        return "蝎子大王";
+    }
 }

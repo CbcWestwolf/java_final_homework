@@ -40,6 +40,11 @@ public class Bad extends Creatures {
         return result;
     }
 
+    @Override
+    public String toString(){
+        return "反方";
+    }
+
     public void run(){
 
         while (!Thread.interrupted()) {

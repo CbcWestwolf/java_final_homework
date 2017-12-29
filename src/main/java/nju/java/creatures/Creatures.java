@@ -5,6 +5,7 @@ import nju.java.Ground;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -12,7 +13,7 @@ import java.util.Random;
 /**
  * Created by cbcwestwolf on 2017/12/26.
  */
-public abstract class Creatures implements Runnable{
+public abstract class Creatures implements Runnable ,Serializable {
 
     private int x ; // [ 0 , MAX_X ]
     private int y ; // [ 0 , MAX_Y ]

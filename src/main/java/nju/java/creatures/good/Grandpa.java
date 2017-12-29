@@ -12,6 +12,7 @@ public class Grandpa extends Good {
     public Grandpa(int x, int y, Ground ground) {
         super(x, y, ground);
         power = 10; // 爷爷羸弱无比
+
     }
 
 

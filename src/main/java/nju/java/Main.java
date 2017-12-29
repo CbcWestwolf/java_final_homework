@@ -4,9 +4,9 @@ package nju.java; /**
 
 import javax.swing.*;
 
-public class GameBoard extends JFrame{
+public class Main extends JFrame{
 
-    public GameBoard(){
+    public Main(){
         initUI();
     }
 
@@ -22,7 +22,7 @@ public class GameBoard extends JFrame{
     }
 
     public static void main(String[] arg){
-        GameBoard gameBoard = new GameBoard();
+        Main gameBoard = new Main();
         gameBoard.setVisible(true);
     }
 }
