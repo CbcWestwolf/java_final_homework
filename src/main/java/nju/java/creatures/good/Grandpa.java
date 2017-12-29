@@ -15,5 +15,9 @@ public class Grandpa extends Good {
 
     }
 
+    @Override
+    public String toString(){
+        return "爷爷";
+    }
 
 }

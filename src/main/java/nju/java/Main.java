@@ -16,7 +16,7 @@ public class Main extends JFrame{
         add(ground);  // 在GameBourd
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50);
+        setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50+100);
         setLocationRelativeTo(null);
         setTitle("葫芦娃");
     }
