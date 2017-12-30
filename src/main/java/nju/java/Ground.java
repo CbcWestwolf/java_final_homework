@@ -8,6 +8,7 @@ import nju.java.creatures.good.Grandpa;
 import nju.java.creatures.bad.ScorpionKing;
 import nju.java.creatures.bad.SnakeQueen;
 import nju.java.creatures.bad.Toad;
+import nju.java.tools.FileFilterTest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -95,16 +96,8 @@ public class Ground extends JPanel {
         return stop;
     }
 
-    public static void setStop(boolean stop) {
-        Ground.stop = stop;
-    }
-
     public static Status getStatus() {
         return status;
-    }
-
-    public static void setStatus(Status status) {
-        Ground.status = status;
     }
 
     // Creatures API
@@ -209,13 +202,20 @@ public class Ground extends JPanel {
                     status = REPLAYING;
                     initThread();
                     initTimer(REPLAY_CLOCK);
-
-
                     System.out.println("已经是REPLAYING");
-                    JFileChooser jFileChooser = new JFileChooser(new File("save"));
-                    jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
-                    jFileChooser.showDialog(null, null);
+
+                    int flag = 1;
+                    JFileChooser jFileChooser = null;
+                    FileFilterTest fileFilter = null ;
+                    while(flag != JFileChooser.APPROVE_OPTION) {
+                        fileFilter = new FileFilterTest();
+                        jFileChooser = new JFileChooser(new File("save"));
+                        jFileChooser.setFileFilter(fileFilter);
+                        jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
+                        flag = jFileChooser.showDialog(null, null);
+                    }
                     readFile = jFileChooser.getSelectedFile();
+
                 }
 
             }
@@ -616,9 +616,7 @@ public class Ground extends JPanel {
                 toads[num].setImage(toadImage);
             else
                 toads[num].setImage(badTombstoneImage);
-
         }
-
         repaint();
     }
 
