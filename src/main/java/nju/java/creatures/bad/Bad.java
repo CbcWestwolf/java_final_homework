@@ -14,17 +14,16 @@ public class Bad extends Creatures {
         super(x, y, ground);
     }
 
-    public ArrayList<Good> getAttackable(){
+    public ArrayList<Good> getAttackable() {
         ArrayList<Good> all = this.ground.getGoodCreatures();
         ArrayList<Good> result = new ArrayList<Good>();
 
-        for( Good g : all ){
-            if( this.ground.distance(this,g) <= Ground.DISTANCE/Ground.STEP )
+        for (Good g : all) {
+            if (this.ground.distance(this, g) <= Ground.DISTANCE / Ground.STEP)
                 result.add(g);
         }
         return result;
     }
-
 
     // 寻找距离最近的敌人
     public Good getNearestGood() {
@@ -41,59 +40,64 @@ public class Bad extends Creatures {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "反方";
     }
 
-    public void run(){
+    public void run() {
 
         while (!Thread.interrupted()) {
-            try {
-                if (isDead() || Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING) {
-                    //System.out.println("没状态？");
-                    Thread.sleep(this.ground.TIME_CLOCK);
-                    this.ground.repaint();
-                    continue;
-                }
-
-                ArrayList<Good> goods = getAttackable();
-                int maxValue = 0;
-                Good goal = null;
-                if (!goods.isEmpty()) {
-                    // 找到得分高的
-                    for (Good g : goods)
-                        if (attackValue(g) > maxValue) {
-                            maxValue = attackValue(g);
-                            goal = g;
-                        }
-                }
-                if (goal != null)
-                    this.ground.requireAttack(this, goal);
-                else {
-                    // 找到距离近的
-                    Good g = getNearestGood();
-                    int x_off = g.getX() - this.getX();
-                    int y_off = g.getY() - this.getY();
-                    if (Math.abs(x_off) > Math.abs(y_off)) {
-                        if (x_off > 0)
-                            this.ground.requireWalk(this, 1, 0);
-                        else
-                            this.ground.requireWalk(this, -1, 0);
-                    } else {
-                        if (y_off > 0)
-                            this.ground.requireWalk(this, 0, 1);
-                        else
-                            this.ground.requireWalk(this, 0, -1);
+            if (Ground.getStatus() == Ground.Status.FIGHTING) {
+                try {
+                    if (isDead() || Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING) {
+                        //System.out.println("没状态？");
+                        Thread.sleep(this.ground.TIME_CLOCK);
+                        this.ground.repaint();
+                        continue;
                     }
+
+                    ArrayList<Good> goods = getAttackable();
+                    int maxValue = 0;
+                    Good goal = null;
+                    if (!goods.isEmpty()) {
+                        // 找到得分高的
+                        for (Good g : goods)
+                            if (attackValue(g) > maxValue) {
+                                maxValue = attackValue(g);
+                                goal = g;
+                            }
+                    }
+                    if (goal != null)
+                        this.ground.requireAttack(this, goal);
+                    else {
+                        // 找到距离近的
+                        Good g = getNearestGood();
+                        int x_off = g.getX() - this.getX();
+                        int y_off = g.getY() - this.getY();
+                        if (Math.abs(x_off) > Math.abs(y_off)) {
+                            if (x_off > 0)
+                                this.ground.requireWalk(this, 1, 0);
+                            else
+                                this.ground.requireWalk(this, -1, 0);
+                        } else {
+                            if (y_off > 0)
+                                this.ground.requireWalk(this, 0, 1);
+                            else
+                                this.ground.requireWalk(this, 0, -1);
+                        }
+                    }
+
+                    Thread.sleep(this.ground.TIME_CLOCK);
+                    this.ground.checkCreature();
+                    this.ground.repaint();
+                } catch (Exception e) {
+
                 }
-
-
-                Thread.sleep(this.ground.TIME_CLOCK);
-                this.ground.checkCreature();
+            } else if (Ground.getStatus() == Ground.Status.REPLAYING) {
                 this.ground.repaint();
-            } catch (Exception e) {
-
+                System.out.println("run方法中的REPLAYING处理");
             }
         }
+
     }
 }

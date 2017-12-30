@@ -7,8 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Random;
+
 
 /**
  * Created by cbcwestwolf on 2017/12/26.
@@ -26,7 +25,6 @@ public abstract class Creatures implements Runnable ,Serializable {
     public void setThread(Thread thread) {
         this.thread = thread;
     }
-
 
     public int getX() {
         return x;
@@ -53,22 +51,15 @@ public abstract class Creatures implements Runnable ,Serializable {
 
     protected Image image;
 
-    public Creatures(){
-        this.x = this.y = 0;
-        this.ground = null;
-    }
-
     public Creatures(int x, int y, Ground ground) {
         this.x = x ;
         this.y = y;
         this.ground = ground;
     }
 
-
     public int getPower() {
         return power;
     }
-
 
     public int getBlood() {
         return blood;
@@ -91,27 +82,10 @@ public abstract class Creatures implements Runnable ,Serializable {
     }
 
     public void setImage(String filename){
-        URL loc = this.getClass().getClassLoader().getResource(filename);
-        ImageIcon iia = new ImageIcon(loc);
-        Image image = iia.getImage();
-        this.setImage(image);
-    }
-
-    // 可行性检查在Ground中进行，Creatures不需要进行检查
-    public synchronized void move(int x_off, int y_off){
-
-        if(Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING )
-            return;
-
-        if( isDead() )
-            return;
-
-        int nx = this.getX() + x_off;
-        int ny = this.getY() + y_off;
-
-        this.setX(nx);
-        this.setY(ny);
-
+        URL url = this.getClass().getClassLoader().getResource(filename);
+        ImageIcon imageIcon = new ImageIcon(url);
+        Image image = imageIcon.getImage();
+        this.image = image;
     }
 
     public abstract void run(); // 行动有两种：一种是攻击(Attack)，一种是移动(Walk)

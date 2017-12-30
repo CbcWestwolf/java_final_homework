@@ -56,20 +56,21 @@ public class Ground extends JPanel {
     private Image snakeImage = null;
     private Image scorpionImage = null;
     private Image toadImage = null;
-    private JLabel jLabel = null;
+    private Image goodTombstoneImage = null;
+    private Image badTombstoneImage = null;
 
     // 正方
     private Grandpa grandpa = null;// 爷爷是唯一的
     private GourdDolls [] gourdDolls = null;
-    private ArrayList<Good>  goodCreatures = null;
 
     // 反方
     // 蝎子精和蛇精是唯一的
     private SnakeQueen snake = null;
     private ScorpionKing scorpion = null;
     private Toad[] toads = null; // 小马仔们
-    private ArrayList<Bad> badCreatures = null;
 
+    private ArrayList<Good> goodCreatures = null;
+    private ArrayList<Bad> badCreatures = null;
     // 死者
     private ArrayList<Creatures> deadCreatures = null; // 记录死亡的生物
 
@@ -85,11 +86,6 @@ public class Ground extends JPanel {
         addKeyListener(new TAdapter());// 添加键盘监视器
         loadBackground(); // 装载场景
         initPictures(); // 为各种生物加载图像
-
-//        jLabel = new JLabel("按下空格开始游戏，按下L开始回放");
-//        jLabel.setVisible(true);
-//
-//        add(jLabel);
     }
 
     public static boolean isStop() {
@@ -171,13 +167,71 @@ public class Ground extends JPanel {
         url = this.getClass().getClassLoader().getResource("蛤蟆精.png");
         imageIcon = new ImageIcon(url);
         toadImage = imageIcon.getImage();
+
+        url = this.getClass().getClassLoader().getResource("葫芦娃墓碑.png");
+        imageIcon = new ImageIcon(url);
+        goodTombstoneImage = imageIcon.getImage();
+
+        url = this.getClass().getClassLoader().getResource("妖怪墓碑.png");
+        imageIcon = new ImageIcon(url);
+        badTombstoneImage = imageIcon.getImage();
     }
+
+
+    class TAdapter extends KeyAdapter {
+        @Override
+        public synchronized void keyPressed(KeyEvent e){
+            int key = e.getKeyCode();
+
+            if (key == KeyEvent.VK_SPACE){ // 开始
+                if( status == WELCOME){
+
+                    /*初始化生物、计时器和线程*/
+                    status = FIGHTING;
+                    System.out.println("状态从WELCOME转为FIGHTING");
+                    initCreature(); // 初始化生物
+                    initThread();
+                }
+            }
+            else if(key == KeyEvent.VK_L){ // 回放
+                if( status == FINISHED ){
+
+                    status = REPLAYING;
+                    System.out.println("状态从FINISHED转为REPLAYING");
+                    //replaying();
+                }
+                else if( status == WELCOME ){
+                    status = REPLAYING;
+                    System.out.println("状态从WELCOME转为REPLAYING");
+                    initCreature(); // 初始化生物
+                    initThread();
+                    //replaying();
+                }
+            }
+            else if(key == KeyEvent.VK_P){ // 暂停
+                stop = !stop;
+                if(stop)
+                    System.out.println("暂停！");
+                else
+                    System.out.println("解除暂停！");
+            }
+            else if( key == KeyEvent.VK_ESCAPE )
+                System.exit(0);
+
+            //System.out.println("Status="+status.toString()+" isStop="+stop);
+            repaint();
+        }
+    }
+
+
+
+
 
     private void initCreature(){
 
         // 初始化爷爷
         grandpa = new Grandpa(0,MAX_Y/2,this);
-        grandpa.setImage("爷爷.png");
+        grandpa.setImage(grandpaImage);
 
         // 初始化葫芦娃
         gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
@@ -188,13 +242,8 @@ public class Ground extends JPanel {
         gourdDolls[4] = new GourdDolls(2*SPACE/STEP,5*SPACE/STEP,this,4);
         gourdDolls[5] = new GourdDolls(1*SPACE/STEP,6*SPACE/STEP,this,5);
         gourdDolls[6] = new GourdDolls(0,7*SPACE/STEP,this,6);
-        gourdDolls[0].setImage("大娃.png");
-        gourdDolls[1].setImage("二娃.png");
-        gourdDolls[2].setImage("三娃.png");
-        gourdDolls[3].setImage("四娃.png");
-        gourdDolls[4].setImage("五娃.png");
-        gourdDolls[5].setImage("六娃.png");
-        gourdDolls[6].setImage("七娃.png");
+        for(int i = 0 ; i < 7 ; ++ i)
+            gourdDolls[i].setImage(gourddollsImage[i]);
 
         // 把爷爷和葫芦娃添加到队列中
         goodCreatures = new ArrayList<Good>();
@@ -206,23 +255,21 @@ public class Ground extends JPanel {
 
         // 初始化蛇精
         snake = new SnakeQueen(MAX_X,MAX_Y/2-SPACE/STEP,this);
-        snake.setImage("蛇精.png");
+        snake.setImage(snakeImage);
 
         // 初始化蝎子精
         scorpion =  new ScorpionKing(MAX_X,MAX_Y/2+SPACE/STEP,this);
-        scorpion.setImage("蝎子精.png");
+        scorpion.setImage(scorpionImage);
 
         toads = new Toad[7];
         for(int i = 0 ; i < 7 ; ++ i){
-
             if( i != 3 && i != 5)
                 toads[i] = new Toad(MAX_X,i*SPACE/STEP,this,i);
             else if (i == 3 )
                 toads[i] = new Toad(MAX_X,7*SPACE/STEP,this,i);
             else
                 toads[i] = new Toad(MAX_X,8*SPACE/STEP,this,i);
-
-            toads[i].setImage("蛤蟆精.png");
+            toads[i].setImage(toadImage);
         }
 
         badCreatures = new ArrayList<Bad>();
@@ -250,17 +297,24 @@ public class Ground extends JPanel {
     private void initThread() {
 
         creaturesThreads = new ArrayList<Thread>();
-        for (Creatures c : goodCreatures) {
-            creaturesThreads.add(new Thread(c));
-            c.setThread(creaturesThreads.get(creaturesThreads.size()-1));
-        }
-        for (Creatures c : badCreatures) {
-            creaturesThreads.add(new Thread(c));
-            c.setThread(creaturesThreads.get(creaturesThreads.size()-1));
-        }
+        if( ! goodCreatures.isEmpty() )
+            for (Creatures c : goodCreatures) {
+                creaturesThreads.add(new Thread(c));
+                c.setThread(creaturesThreads.get(creaturesThreads.size() - 1));
+                System.out.println(c.toString()+"线程初始化");
+            }
+        if( ! badCreatures.isEmpty() )
+            for (Creatures c : badCreatures) {
+                creaturesThreads.add(new Thread(c));
+                c.setThread(creaturesThreads.get(creaturesThreads.size()-1));
+            }
+        if( ! deadCreatures.isEmpty() )
+            for (Creatures c : deadCreatures) {
+                creaturesThreads.add(new Thread(c));
+                c.setThread(creaturesThreads.get(creaturesThreads.size()-1));
+            }
         for (Thread t : creaturesThreads)
             t.start();
-
     }
 
     // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
@@ -272,10 +326,10 @@ public class Ground extends JPanel {
                 +deadCreatures.size());*/
         //System.out.println("检查：状态为"+status.toString());
 
-        if( status == FIGHTING && ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
+        if( status == FIGHTING &&
+                ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
             status = FINISHED;
             System.out.println("FINISHED");
-
             // TODO:弹出游戏信息提示
             return;
         }
@@ -300,18 +354,27 @@ public class Ground extends JPanel {
             }
         }
 
+        if( status == FIGHTING &&
+                ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
+            status = FINISHED;
+            System.out.println("FINISHED");
+            // TODO:弹出游戏信息提示
+            return;
+        }
+
         if( status == FIGHTING ) {
-            writeFile();
+            //writeFile();
+            // TODO:写入文件
             //System.out.println("Good:"+goodCreatures.size()+                " Bad:"+badCreatures.size()+                " Dead:"+deadCreatures.size());
         }
 
     }
 
-    private synchronized void  paintGround(Graphics g) {
+    private synchronized void paintImage(Graphics g) {
 
         g.drawImage(backgroundImage, 0, 0, PIXEL_WIDTH, PIXEL_HEIGHT, this);
 
-        if( status == FIGHTING || status == FINISHED) {
+        if( status != WELCOME ) {
             if (goodCreatures != null)
                 for (Good c : goodCreatures)
                     g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
@@ -323,43 +386,28 @@ public class Ground extends JPanel {
                     g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
         }
 
-        if( status == REPLAYING ){
-            if (goodCreatures != null)
-                for (Good c : goodCreatures)
-                    g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
-            if (badCreatures != null)
-                for (Bad c : badCreatures)
-                    g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
-            if (deadCreatures != null)
-                for (Creatures c : deadCreatures)
-                    g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
-        }
 
     }
 
     @Override
     public void paint(Graphics g){
         super.paint(g);
-        paintGround(g);
+        paintImage(g);
         g.drawString("按下空格开始游戏，按下L开始回放",0,PIXEL_HEIGHT);
     }
 
-    @Override
-    public void repaint(){
-        super.repaint();
-    }
-
-    public enum Status {WELCOME, FIGHTING, REPLAYING , FINISHED};
+    public enum Status {WELCOME, FIGHTING, REPLAYING , FIGHTINGG, FINISHED};
 
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离
     public boolean requireAttack(Creatures attacker, Creatures attacked){
         int distance = distance(attacker,attacked);
-        if( distance > 0 && distance <= DISTANCE/STEP ){ // 可以位移
+        if( distance > 0 && distance <= DISTANCE/STEP ){ // 可以攻击
             // 对双方的血量进行减少
             int attackerBlood = attacker.getBlood()-attacked.getPower()/2;
             int attackedBlood = attacked.getBlood()-attacker.getPower();
-            System.out.println("攻击者血量降为"+attackerBlood+" 被攻击者血量降为"+attackedBlood);
+            System.out.println(attacker.toString()+"血量降为"+attackerBlood+" "
+                    +attacked.toString()+" 血量降为"+attackedBlood);
             attacker.setBlood(attackerBlood);
             attacked.setBlood(attackedBlood);
             return true;
@@ -371,11 +419,13 @@ public class Ground extends JPanel {
     // Creature API : 攻击成功返回boolean
     // 检查的重点：是否重合，是否越界，是否只有一个值为1
     public boolean requireWalk(Creatures c, int x_off, int y_off){
-        if( x_off * y_off != 0 || Math.abs(x_off+y_off) != 1 )
+        if( x_off * y_off != 0 || Math.abs(x_off+y_off) != 1 ) // 是否只有一个值为1
             return false;
         int newX = c.getX()+x_off, newY = c.getY() + y_off;
-        if(newX < 0 || newX > MAX_X || newY<0 || newY > MAX_Y )
+        if(newX < 0 || newX > MAX_X || newY<0 || newY > MAX_Y ) // 是否越界
             return false;
+
+        // 是否重合
         for(Creatures i : goodCreatures ){
             if(i == c)
                 continue;
@@ -398,14 +448,11 @@ public class Ground extends JPanel {
     // Creatures API:
     // 返回两个生物体在坐标轴上的距离(x距离+y距离
     public final int distance(Creatures a, Creatures b){
-        int minX = a.getX()<b.getX() ? a.getX():b.getX();
-        int maxX = a.getX()<b.getX() ? b.getX():a.getX();
-        int minY = a.getY()<b.getY() ? a.getY():b.getY();
-        int maxY = a.getY()<b.getY() ? b.getY():a.getY();
-        return maxX - minX + maxY - minY;
+        return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());
     }
 
-    private void writeFile(){
+    // TODO
+    private synchronized void writeFile(){
         // 寻找一个可用的文件
         if (writeFile == null){
             Date now = new Date();
@@ -417,8 +464,8 @@ public class Ground extends JPanel {
 
         // 把三个ArrayList中的对象都写进文件
         try {
-            OutputStream outputStream = new FileOutputStream(writeFile,true);
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+            FileWriter fileWriter = new FileWriter(writeFile,true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             ArrayList<Creatures> temp = new ArrayList<Creatures>();
             if( ! goodCreatures.isEmpty() )
@@ -429,25 +476,23 @@ public class Ground extends JPanel {
                     temp.add(b);
 
             for( Creatures c : temp){
-                dataOutputStream.writeUTF(c.toString());
-                dataOutputStream.writeInt(c.getX());
-                dataOutputStream.writeInt(c.getY());
-                dataOutputStream.writeBoolean(true);
+                bufferedWriter.write(c.toString()+" "+c.getX()+" "+c.getY()+" "+1 );
+                bufferedWriter.newLine();
+                System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+true);
             }
 
             temp.clear();
+
             if( ! deadCreatures.isEmpty() )
                 for( Creatures d : deadCreatures )
                     temp.add(d);
             for( Creatures c : temp){
-                dataOutputStream.writeUTF(c.toString());
-                dataOutputStream.writeInt(c.getX());
-                dataOutputStream.writeInt(c.getY());
-                dataOutputStream.writeBoolean(false);
+                bufferedWriter.write(c.toString()+" "+c.getX()+" "+c.getY()+" "+ 0 );
+                bufferedWriter.newLine();
+                System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+false);
             }
-
-            dataOutputStream.close();
-            outputStream.close();
+            bufferedWriter.close();
+            fileWriter.close();
         }
         catch (FileNotFoundException e){
 
@@ -458,198 +503,166 @@ public class Ground extends JPanel {
 
     }
 
-    class TAdapter extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent e){
-            int key = e.getKeyCode();
-
-            if (key == KeyEvent.VK_SPACE){ // 开始
-                if( status == WELCOME){
-
-                    /*初始化生物、计时器和线程*/
-                    status = FIGHTING;
-                    initCreature(); // 初始化生物
-                    initThread();
-                    //initTimer();
-
-                    System.out.println("状态从WELCOME转为FIGHTING");
-
-                }
-            }
-            else if(key == KeyEvent.VK_L){ // 回放
-                if( status == FINISHED ){
-
-                    status = REPLAYING;
-                    System.out.println("状态从FINISHED转为REPLAYING");
-                    replaying();
-
-                }
-                else if( status == WELCOME ){
-                    status = REPLAYING;
-                    System.out.println("状态从WELCOME转为REPLAYING");
-                    initCreature(); // 初始化生物
-                    //initTimer();
-                    replaying();
-
-                }
-            }
-            else if(key == KeyEvent.VK_P){ // 暂停
-                stop = !stop;
-                if(stop)
-                    System.out.println("暂停！");
-                else
-                    System.out.println("解除暂停！");
-            }
-            else if( key == KeyEvent.VK_ESCAPE )
-                System.exit(0);
-
-            //System.out.println("Status="+status.toString()+" isStop="+stop);
-            repaint();
-        }
-    }
-
-    private void replaying(){
+    // TODO
+    private synchronized void replaying(){
 
         JFileChooser jFileChooser = new JFileChooser(new File("save"));
         jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
         jFileChooser.showDialog(null,null);
         readFile = jFileChooser.getSelectedFile();
+
         if( readFile != null ) {
             // System.out.println(readFile.toString());
-            Creatures []creatures = new Creatures[CREATURE_NUM];
-            String []strings = new String[CREATURE_NUM];
-            int [] x = new int[CREATURE_NUM];
-            int [] y = new int[CREATURE_NUM];
-            boolean [] isLive = new boolean[CREATURE_NUM];
-            InputStream inputStream = null ;
+            InputStream inputStream = null;
             DataInputStream dataInputStream = null;
             try {
 
                 inputStream = new FileInputStream(readFile);
                 dataInputStream = new DataInputStream(inputStream);
+                FileReader fileReader = new FileReader(readFile);
                 String name = null;
-                int tempX = -1 , tempY = -1 ;
+                int tempX = -1, tempY = -1;
                 boolean l = false;
                 int i = 0;
 
-
-                while( dataInputStream.available() != 0 ){
+                while (dataInputStream.available() != 0) {
                     name = dataInputStream.readUTF();
                     tempX = dataInputStream.readInt();
                     tempY = dataInputStream.readInt();
                     l = dataInputStream.readBoolean();
 
-                    strings[i] = name;
-                    x[i] = tempX;
-                    y[i] = tempY;
-                    isLive[i] = l;
+                    System.out.println(name + " " + tempX + " " + tempY + " " + l);
 
-                    i = (i+1) % CREATURE_NUM;
-                    if( i == 0 ){
 
-                        int j = 0;
-                        for( i = 0 ; i < CREATURE_NUM ; ++ i) {
-                            if( strings[i] == "爷爷" ){
-                                grandpa.setX(x[i]);
-                                grandpa.setY(y[i]);
-                                if( isLive[i] )
-                                    grandpa.setImage(grandpaImage);
-                                else
-                                    grandpa.setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "蝎子精"){
-                                scorpion.setX(x[i]);
-                                scorpion.setY(y[i]);
-                                if( isLive[i ])
-                                    scorpion.setImage(scorpionImage);
-                                else
-                                    scorpion.setImage("妖怪墓碑");
-                            }
-                            else if( strings[i] == "蛇精"){
-                                snake.setX(x[i]);
-                                snake.setY(y[i]);
-                                if( isLive[i ])
-                                    snake.setImage(snakeImage);
-                                else
-                                    snake.setImage("妖怪墓碑");
-                            }
-                            else if( strings[i] == "大娃"){
-                                gourdDolls[0].setX(x[i]);
-                                gourdDolls[0].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[0].setImage(gourddollsImage[0]);
-                                else
-                                    gourdDolls[0].setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "二娃"){
-                                gourdDolls[1].setX(x[i]);
-                                gourdDolls[1].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[1].setImage(gourddollsImage[1]);
-                                else
-                                    gourdDolls[1].setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "三娃"){
-                                gourdDolls[2].setX(x[i]);
-                                gourdDolls[2].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[2].setImage(gourddollsImage[2]);
-                                else
-                                    gourdDolls[2].setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "四娃"){
-                                gourdDolls[3].setX(x[i]);
-                                gourdDolls[3].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[3].setImage(gourddollsImage[3]);
-                                else
-                                    gourdDolls[3].setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "五娃"){
-                                gourdDolls[4].setX(x[i]);
-                                gourdDolls[4].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[4].setImage(gourddollsImage[4]);
-                                else
-                                    gourdDolls[4].setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "六娃"){
-                                gourdDolls[5].setX(x[i]);
-                                gourdDolls[5].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[5].setImage(gourddollsImage[5]);
-                                else
-                                    gourdDolls[5].setImage("葫芦娃墓碑.png");
-                            }
-                            else if( strings[i] == "七娃"){
-                                gourdDolls[6].setX(x[i]);
-                                gourdDolls[6].setY(y[i]);
-                                if( isLive[i] )
-                                    gourdDolls[6].setImage(gourddollsImage[6]);
-                                else
-                                    gourdDolls[6].setImage("葫芦娃墓碑.png");
-                            }
-                            else{ // 蛤蟆精
-                                toads[j].setX(x[i]);
-                                toads[j].setY(y[i]);
-                                if( isLive[i])
-                                    toads[j].setImage(toadImage);
-                                else
-                                    toads[j].setImage("妖怪墓碑.png");
-                                j = (j + 1) % 7;
-                            }
-                        }
-                        repaint();
-                        i = 0;
+                    if (name == "爷爷") {
+                        grandpa.setX(tempX);
+                        grandpa.setY(tempY);
+                        if (l)
+                            grandpa.setImage(grandpaImage);
+                        else
+                            grandpa.setImage("葫芦娃墓碑.png");
+                    } else if (name == "蝎子精") {
+                        scorpion.setX(tempX);
+                        scorpion.setY(tempY);
+                        if (l)
+                            scorpion.setImage(scorpionImage);
+                        else
+                            scorpion.setImage("妖怪墓碑");
+                    } else if (name == "蛇精") {
+                        snake.setX(tempX);
+                        snake.setY(tempY);
+                        if (l)
+                            snake.setImage(snakeImage);
+                        else
+                            snake.setImage("妖怪墓碑");
+                    } else if (name == "大娃") {
+                        gourdDolls[0].setX(tempX);
+                        gourdDolls[0].setY(tempY);
+                        if (l)
+                            gourdDolls[0].setImage(gourddollsImage[0]);
+                        else
+                            gourdDolls[0].setImage("葫芦娃墓碑.png");
+                    } else if (name == "二娃") {
+                        gourdDolls[1].setX(tempX);
+                        gourdDolls[1].setY(tempY);
+                        if (l)
+                            gourdDolls[1].setImage(gourddollsImage[1]);
+                        else
+                            gourdDolls[1].setImage("葫芦娃墓碑.png");
+                    } else if (name == "三娃") {
+                        gourdDolls[2].setX(tempX);
+                        gourdDolls[2].setY(tempY);
+                        if (l)
+                            gourdDolls[2].setImage(gourddollsImage[2]);
+                        else
+                            gourdDolls[2].setImage("葫芦娃墓碑.png");
+                    } else if (name == "四娃") {
+                        gourdDolls[3].setX(tempX);
+                        gourdDolls[3].setY(tempY);
+                        if (l)
+                            gourdDolls[3].setImage(gourddollsImage[3]);
+                        else
+                            gourdDolls[3].setImage("葫芦娃墓碑.png");
+                    } else if (name == "五娃") {
+                        gourdDolls[4].setX(tempX);
+                        gourdDolls[4].setY(tempY);
+                        if (l)
+                            gourdDolls[4].setImage(gourddollsImage[4]);
+                        else
+                            gourdDolls[4].setImage("葫芦娃墓碑.png");
+                    } else if (name == "六娃") {
+                        gourdDolls[5].setX(tempX);
+                        gourdDolls[5].setY(tempY);
+                        if (l)
+                            gourdDolls[5].setImage(gourddollsImage[5]);
+                        else
+                            gourdDolls[5].setImage("葫芦娃墓碑.png");
+                    } else if (name == "七娃") {
+                        gourdDolls[6].setX(tempX);
+                        gourdDolls[6].setY(tempY);
+                        if (l)
+                            gourdDolls[6].setImage(gourddollsImage[6]);
+                        else
+                            gourdDolls[6].setImage("葫芦娃墓碑.png");
+                    } else if(name == "马仔1号"){ // 蛤蟆精
+                        toads[0].setX(tempX);
+                        toads[0].setY(tempY);
+                        if (l)
+                            toads[0].setImage(toadImage);
+                        else
+                            toads[0].setImage("妖怪墓碑.png");
+                    }else if(name == "马仔2号"){ // 蛤蟆精
+                        toads[1].setX(tempX);
+                        toads[1].setY(tempY);
+                        if (l)
+                            toads[1].setImage(toadImage);
+                        else
+                            toads[1].setImage("妖怪墓碑.png");
                     }
-//                    System.out.println(name+" "+tempX+" "+tempY+" "+l);
+                    else if(name == "马仔3号"){ // 蛤蟆精
+                        toads[2].setX(tempX);
+                        toads[2].setY(tempY);
+                        if (l)
+                            toads[2].setImage(toadImage);
+                        else
+                            toads[2].setImage("妖怪墓碑.png");
+                    }
+                    else if(name == "马仔4号"){ // 蛤蟆精
+                        toads[3].setX(tempX);
+                        toads[3].setY(tempY);
+                        if (l)
+                            toads[3].setImage(toadImage);
+                        else
+                            toads[3].setImage("妖怪墓碑.png");
+                    }
+                    else if(name == "马仔5号"){ // 蛤蟆精
+                        toads[4].setX(tempX);
+                        toads[4].setY(tempY);
+                        if (l)
+                            toads[4].setImage(toadImage);
+                        else
+                            toads[4].setImage("妖怪墓碑.png");
+                    }
+                    else if(name == "马仔6号"){ // 蛤蟆精
+                        toads[5].setX(tempX);
+                        toads[5].setY(tempY);
+                        if (l)
+                            toads[5].setImage(toadImage);
+                        else
+                            toads[5].setImage("妖怪墓碑.png");
+                    }
+                    else if(name == "马仔7号"){ // 蛤蟆精
+                        toads[6].setX(tempX);
+                        toads[6].setY(tempY);
+                        if (l)
+                            toads[6].setImage(toadImage);
+                        else
+                            toads[6].setImage("妖怪墓碑.png");
+                    }
+                    repaint();
                 }
-
-//                System.out.println(i+" "+i%CREATURE_NUM);
-
                 dataInputStream.close();
                 inputStream.close();
-
             }
             catch (FileNotFoundException e){
                 System.out.println("Here 1");

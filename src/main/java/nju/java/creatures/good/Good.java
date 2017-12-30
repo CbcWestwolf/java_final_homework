@@ -18,59 +18,65 @@ public class Good extends Creatures {
     public void run() {
 
         while (!Thread.interrupted()) {
-
-            try {
-            if (isDead() || Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING) {
-                //System.out.println("没状态？");
-                Thread.sleep(this.ground.TIME_CLOCK);
-                this.ground.repaint();
-                continue;
-            }
-
-            ArrayList<Bad> bads = getAttackable();
-            int maxValue = 0;
-            Bad goal = null;
-            if( ! bads.isEmpty() ){
-                // 找到得分高的
-                for( Bad b : bads )
-                    if( attackValue(b) > maxValue ){
-                        maxValue = attackValue(b);
-                        goal = b;
+            if (Ground.getStatus() == Ground.Status.FIGHTING) {
+                try {
+                    if (isDead() || Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING) {
+                        //System.out.println("没状态？");
+                        Thread.sleep(this.ground.TIME_CLOCK);
+                        this.ground.repaint();
+                        continue;
                     }
-            }
-            if( goal != null )
-                this.ground.requireAttack(this,goal);
-            else {
-                // 找到距离近的
-                Bad bad = getNearestBad();
-                int x_off = bad.getX() - this.getX();
-                int y_off = bad.getY() - this.getY();
-                if (Math.abs(x_off) > Math.abs(y_off)) {
-                    if (x_off > 0)
-                        this.ground.requireWalk(this, 1, 0);
-                    else
-                        this.ground.requireWalk(this, -1, 0);
-                } else {
-                    if (y_off > 0)
-                        this.ground.requireWalk(this, 0, 1);
-                    else
-                        this.ground.requireWalk(this, 0, -1);
+
+                    ArrayList<Bad> bads = getAttackable();
+                    int maxValue = 0;
+                    Bad goal = null;
+                    if (!bads.isEmpty()) {
+                        // 找到得分高的
+                        for (Bad b : bads)
+                            if (attackValue(b) > maxValue) {
+                                maxValue = attackValue(b);
+                                goal = b;
+                            }
+                    }
+                    if (goal != null)
+                        this.ground.requireAttack(this, goal);
+                    else {
+                        // 找到距离近的
+                        Bad b = getNearestBad();
+                        int x_off = b.getX() - this.getX();
+                        int y_off = b.getY() - this.getY();
+                        if (Math.abs(x_off) > Math.abs(y_off)) {
+                            if (x_off > 0)
+                                this.ground.requireWalk(this, 1, 0);
+                            else
+                                this.ground.requireWalk(this, -1, 0);
+                        } else {
+                            if (y_off > 0)
+                                this.ground.requireWalk(this, 0, 1);
+                            else
+                                this.ground.requireWalk(this, 0, -1);
+                        }
+                    }
+
+                    Thread.sleep(this.ground.TIME_CLOCK);
+                    this.ground.checkCreature();
+                    this.ground.repaint();
+                } catch (Exception e) {
+
                 }
-            }
-                Thread.sleep(this.ground.TIME_CLOCK);
-                this.ground.checkCreature();
+            } else if (Ground.getStatus() == Ground.Status.REPLAYING) {
                 this.ground.repaint();
-
-
-            }catch (Exception e) {
-
+                System.out.println("run方法中的REPLAYING处理");
             }
         }
+
     }
+
+
 
     @Override
     public String toString(){
-        return "正方方";
+        return "正方";
     }
 
     // 寻找可攻击的敌人
@@ -91,7 +97,7 @@ public class Good extends Creatures {
         int minDistance = Integer.MAX_VALUE;
         Bad result = null;
         for( Bad b : all ) {
-            if (this.ground.distance(this, b) < minDistance) {// TODO:判断
+            if (this.ground.distance(this, b) < minDistance) {
                 minDistance = this.ground.distance(this, b);
                 result = b;
             }
