@@ -88,7 +88,7 @@ public class Ground extends JPanel {
         setFocusable(true); // 设置可见
         addKeyListener(new TAdapter());// 添加键盘监视器
         loadBackground(); // 装载场景
-        initPictures(); // 为各种生物加载图像
+        loadPictures(); // 为各种生物加载图像
     }
 
     public static boolean isStop() {
@@ -124,7 +124,7 @@ public class Ground extends JPanel {
 
     }
 
-    private void initPictures(){
+    private void loadPictures(){
         URL url = this.getClass().getClassLoader().getResource("爷爷.png");
         ImageIcon imageIcon = new ImageIcon(url);
         grandpaImage = imageIcon.getImage();
@@ -333,30 +333,38 @@ public class Ground extends JPanel {
                 +badCreatures.size()+" "
                 +deadCreatures.size());*/
         //System.out.println("检查：状态为"+status.toString());
-
-        Iterator<Good> g = goodCreatures.iterator();
-        while(g.hasNext()){
-            Good temp = g.next();
-            if(temp.isDead()){
-                temp.setImage(goodTombstoneImage);
-                deadCreatures.add(temp);
-                g.remove();
-            }
-        }
-
-        Iterator<Bad> b = badCreatures.iterator();
-        while(b.hasNext()){
-            Bad temp = b.next();
-            if(temp.isDead()){
-                temp.setImage(badTombstoneImage);
-                deadCreatures.add(temp);
-                b.remove();
-            }
-        }
-
         if( status == FIGHTING ) {
+            Iterator<Good> g = goodCreatures.iterator();
+            while (g.hasNext()) {
+                Good temp = g.next();
+                if (temp.isDead()) {
+                    temp.setImage(goodTombstoneImage);
+                    deadCreatures.add(temp);
+                    g.remove();
+                }
+            }
+
+            Iterator<Bad> b = badCreatures.iterator();
+            while (b.hasNext()) {
+                Bad temp = b.next();
+                if (temp.isDead()) {
+                    temp.setImage(badTombstoneImage);
+                    deadCreatures.add(temp);
+                    b.remove();
+                }
+            }
+
             writeFile();
-            //System.out.println("Good:"+goodCreatures.size()+                " Bad:"+badCreatures.size()+                " Dead:"+deadCreatures.size());
+
+
+            if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
+                status = FINISHED;
+                System.out.println("转为FINISHED");
+                for(Thread t : creaturesThreads)
+                    t.suspend();
+                // TODO:弹出游戏信息提示
+                return;
+            }
         }
 
         if( status == REPLAYING){
@@ -381,7 +389,8 @@ public class Ground extends JPanel {
                     fileReader.close();
                     for( Thread t : creaturesThreads )
                         t.suspend();
-                    status = FINISHED;
+                    status = CLOSE;
+                    System.out.println("状态转为CLOSE");
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -390,20 +399,14 @@ public class Ground extends JPanel {
             }
         }
 
-        if( status == FIGHTING &&
-                ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
-            status = FINISHED;
-            System.out.println("转为FINISHED");
-            for(Thread t : creaturesThreads)
-                t.suspend();
-            // TODO:弹出游戏信息提示
-            return;
-        }
     }
 
     private synchronized void paintImage(Graphics g) {
 
         g.drawImage(backgroundImage, 0, 0, PIXEL_WIDTH, PIXEL_HEIGHT, this);
+
+        g.drawImage(goodTombstoneImage,100,PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawImage(badTombstoneImage,100+SPACE,PIXEL_HEIGHT,SPACE,SPACE,this);
 
         if( status != WELCOME ) {
             if (goodCreatures != null)
@@ -435,7 +438,7 @@ public class Ground extends JPanel {
         g.drawString("按下空格开始游戏，按下L开始回放",0,PIXEL_HEIGHT);
     }
 
-    public enum Status {WELCOME, FIGHTING, REPLAYING , FIGHTINGG, FINISHED};
+    public enum Status {WELCOME, FIGHTING, REPLAYING , FINISHED , CLOSE};
 
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离
@@ -560,9 +563,11 @@ public class Ground extends JPanel {
         name = temp[0];
         x = Integer.parseInt(temp[1]);
         y = Integer.parseInt(temp[2]);
-        isAlive = (temp[3] == "0") ? false : true;
+        isAlive = (temp[3].equals("0")) ? false : true;
         //System.out.println(name + " " + x + " " + y + " " + isAlive);
 
+        if( ! isAlive)
+            System.out.println(name + " " + x + " " + y + " " + isAlive);
 
         if (name.equals("爷爷") ) {
             grandpa.setX(x);
@@ -577,14 +582,14 @@ public class Ground extends JPanel {
             if (isAlive)
                 scorpion.setImage(scorpionImage);
             else
-                scorpion.setImage("妖怪墓碑");
+                scorpion.setImage(badTombstoneImage);
         } else if (name.equals("蛇精")) {
             snake.setX(x);
             snake.setY(y);
             if (isAlive)
                 snake.setImage(snakeImage);
             else
-                snake.setImage("妖怪墓碑");
+                snake.setImage(badTombstoneImage);
         } else if (name.equals("大娃")) {
             gourdDolls[0].setX(x);
             gourdDolls[0].setY(y);
