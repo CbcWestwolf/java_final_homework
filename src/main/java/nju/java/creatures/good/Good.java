@@ -63,8 +63,13 @@ public class Good extends Creatures {
 
                 }
             } else if (Ground.getStatus() == Ground.Status.REPLAYING) {
-                //this.ground.repaint();
-                //System.out.println("run方法中的REPLAYING处理");
+
+                try {
+                    Thread.sleep(0,Ground.TIME_CLOCK/Ground.REPLAY_CLOCK);
+                }
+                catch(InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
 
