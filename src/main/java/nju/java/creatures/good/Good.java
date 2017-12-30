@@ -23,7 +23,6 @@ public class Good extends Creatures {
                     if (isDead() || Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING) {
                         //System.out.println("没状态？");
                         Thread.sleep(this.ground.TIME_CLOCK);
-                        this.ground.repaint();
                         continue;
                     }
 
@@ -59,14 +58,13 @@ public class Good extends Creatures {
                     }
 
                     Thread.sleep(this.ground.TIME_CLOCK);
-                    this.ground.checkCreature();
-                    this.ground.repaint();
+
                 } catch (Exception e) {
 
                 }
             } else if (Ground.getStatus() == Ground.Status.REPLAYING) {
-                this.ground.repaint();
-                System.out.println("run方法中的REPLAYING处理");
+                //this.ground.repaint();
+                //System.out.println("run方法中的REPLAYING处理");
             }
         }
 

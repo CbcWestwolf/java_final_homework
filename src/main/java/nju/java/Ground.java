@@ -191,6 +191,7 @@ public class Ground extends JPanel {
                     System.out.println("状态从WELCOME转为FIGHTING");
                     initCreature(); // 初始化生物
                     initThread();
+                    initTimer();
                 }
             }
             else if(key == KeyEvent.VK_L){ // 回放
@@ -205,6 +206,7 @@ public class Ground extends JPanel {
                     System.out.println("状态从WELCOME转为REPLAYING");
                     initCreature(); // 初始化生物
                     initThread();
+                    initTimer();
                     //replaying();
                 }
             }
@@ -286,8 +288,8 @@ public class Ground extends JPanel {
     private void initTimer(){
         timerTask = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO:添加更多定时检查
-
+                checkCreature();
+                repaint();
             }
         };
         timer = new Timer(TIME_CLOCK,timerTask);
@@ -326,14 +328,6 @@ public class Ground extends JPanel {
                 +deadCreatures.size());*/
         //System.out.println("检查：状态为"+status.toString());
 
-        if( status == FIGHTING &&
-                ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
-            status = FINISHED;
-            System.out.println("FINISHED");
-            // TODO:弹出游戏信息提示
-            return;
-        }
-
         Iterator<Good> g = goodCreatures.iterator();
         while(g.hasNext()){
             Good temp = g.next();
@@ -354,20 +348,23 @@ public class Ground extends JPanel {
             }
         }
 
+
+
+        if( status == FIGHTING ) {
+            writeFile();        // TODO:写入文件
+
+            //System.out.println("Good:"+goodCreatures.size()+                " Bad:"+badCreatures.size()+                " Dead:"+deadCreatures.size());
+        }
+
         if( status == FIGHTING &&
                 ( goodCreatures.isEmpty() || badCreatures.isEmpty() ) ) {
             status = FINISHED;
             System.out.println("FINISHED");
+            for (Thread t : creaturesThreads)
+                t.suspend();
             // TODO:弹出游戏信息提示
             return;
         }
-
-        if( status == FIGHTING ) {
-            //writeFile();
-            // TODO:写入文件
-            //System.out.println("Good:"+goodCreatures.size()+                " Bad:"+badCreatures.size()+                " Dead:"+deadCreatures.size());
-        }
-
     }
 
     private synchronized void paintImage(Graphics g) {
@@ -478,7 +475,7 @@ public class Ground extends JPanel {
             for( Creatures c : temp){
                 bufferedWriter.write(c.toString()+" "+c.getX()+" "+c.getY()+" "+1 );
                 bufferedWriter.newLine();
-                System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+true);
+                //System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+true);
             }
 
             temp.clear();
@@ -489,7 +486,7 @@ public class Ground extends JPanel {
             for( Creatures c : temp){
                 bufferedWriter.write(c.toString()+" "+c.getX()+" "+c.getY()+" "+ 0 );
                 bufferedWriter.newLine();
-                System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+false);
+                //System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+false);
             }
             bufferedWriter.close();
             fileWriter.close();
@@ -659,7 +656,6 @@ public class Ground extends JPanel {
                         else
                             toads[6].setImage("妖怪墓碑.png");
                     }
-                    repaint();
                 }
                 dataInputStream.close();
                 inputStream.close();
