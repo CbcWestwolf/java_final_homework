@@ -196,24 +196,27 @@ public class Ground extends JPanel {
                 }
             }
             else if(key == KeyEvent.VK_L){ // 回放
-                if( status == WELCOME ){
-                    status = REPLAYING;
-                    System.out.println("转为REPLAYING");
-                    initThread();
-                    initTimer(REPLAY_CLOCK);
-                }
-                else if(status == FINISHED ){
-                    status = REPLAYING;
-                    System.out.println("转为REPLAYING");
-                    initThread();
-                    initTimer(REPLAY_CLOCK);
-                }
 
-                System.out.println("已经是REPLAYING");
-                JFileChooser jFileChooser = new JFileChooser(new File("save"));
-                jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
-                jFileChooser.showDialog(null, null);
-                readFile = jFileChooser.getSelectedFile();
+                /**
+                 1.添加读入记录
+                 2.根据记录更新某个生物体的位置、状态
+                 3.repaint();
+                 3.休眠一段时间
+                 4.继续读入记录
+                 */
+
+                if( status == WELCOME || status == FINISHED ) {
+                    status = REPLAYING;
+                    initThread();
+                    initTimer(REPLAY_CLOCK);
+
+
+                    System.out.println("已经是REPLAYING");
+                    JFileChooser jFileChooser = new JFileChooser(new File("save"));
+                    jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
+                    jFileChooser.showDialog(null, null);
+                    readFile = jFileChooser.getSelectedFile();
+                }
 
             }
             else if(key == KeyEvent.VK_P){ // 暂停
@@ -227,6 +230,7 @@ public class Ground extends JPanel {
                 System.exit(0);
 
             //System.out.println("Status="+status.toString()+" isStop="+stop);
+
         }
     }
 
@@ -367,7 +371,7 @@ public class Ground extends JPanel {
             }
         }
 
-        if( status == REPLAYING){
+        if( status == REPLAYING && (! stop) ){
 
             try {
                 String str = null;
@@ -545,29 +549,22 @@ public class Ground extends JPanel {
     }
 
     private synchronized void replaying(String str) {
-        /***
-         1.添加读入记录
-         2.根据记录更新某个生物体的位置、状态
-         3.repaint();
-         3.休眠一段时间
-         4.继续读入记录
-         */
-
 
         String name = null;
         int x = -1, y = -1;
         boolean isAlive = false;
 
         // System.out.println(str);
+
         String[] temp = str.split(" ");
         name = temp[0];
         x = Integer.parseInt(temp[1]);
         y = Integer.parseInt(temp[2]);
         isAlive = (temp[3].equals("0")) ? false : true;
-        //System.out.println(name + " " + x + " " + y + " " + isAlive);
 
-        if( ! isAlive)
-            System.out.println(name + " " + x + " " + y + " " + isAlive);
+//        //System.out.println(name + " " + x + " " + y + " " + isAlive);
+//        if( ! isAlive)
+//            System.out.println(name + " " + x + " " + y + " " + isAlive);
 
         if (name.equals("爷爷") ) {
             grandpa.setX(x);
@@ -691,19 +688,6 @@ public class Ground extends JPanel {
         }
 
         repaint();
-
-//        try {
-//            Thread.sleep(500);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
-
-//            catch(ClassNotFoundException e){
-//                System.out.println("Here 3");
-//            }
-
-
     }
 
 }
