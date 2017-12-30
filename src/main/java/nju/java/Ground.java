@@ -196,18 +196,18 @@ public class Ground extends JPanel {
             }
             else if(key == KeyEvent.VK_L){ // 回放
                 if( status == FINISHED ){
-
                     status = REPLAYING;
                     System.out.println("状态从FINISHED转为REPLAYING");
-                    //replaying();
+                    initCreature();
+                    replaying();
                 }
                 else if( status == WELCOME ){
                     status = REPLAYING;
                     System.out.println("状态从WELCOME转为REPLAYING");
                     initCreature(); // 初始化生物
-                    initThread();
-                    initTimer();
-                    //replaying();
+                    //initThread();
+                    //initTimer();
+                    replaying();
                 }
             }
             else if(key == KeyEvent.VK_P){ // 暂停
@@ -249,6 +249,7 @@ public class Ground extends JPanel {
 
         // 把爷爷和葫芦娃添加到队列中
         goodCreatures = new ArrayList<Good>();
+        goodCreatures.clear();
         goodCreatures.add(grandpa);
         for( GourdDolls g : gourdDolls ) {
             goodCreatures.add(g);
@@ -275,6 +276,7 @@ public class Ground extends JPanel {
         }
 
         badCreatures = new ArrayList<Bad>();
+        badCreatures.clear();
         badCreatures.add(snake);
         badCreatures.add(scorpion);
         for(Bad c : toads) {
@@ -283,13 +285,20 @@ public class Ground extends JPanel {
         }
 
         deadCreatures = new ArrayList<Creatures>();
+        deadCreatures.clear();
     }
 
     private void initTimer(){
         timerTask = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                checkCreature();
-                repaint();
+                if( status == FIGHTING ) {
+                    checkCreature();
+                    repaint();
+                }
+                else if( status == REPLAYING ){
+                    replaying();
+                }
+                // System.out.println("状态+"+status);
             }
         };
         timer = new Timer(TIME_CLOCK,timerTask);
@@ -332,7 +341,7 @@ public class Ground extends JPanel {
         while(g.hasNext()){
             Good temp = g.next();
             if(temp.isDead()){
-                temp.setImage("葫芦娃墓碑.png");
+                temp.setImage(goodTombstoneImage);
                 deadCreatures.add(temp);
                 g.remove();
             }
@@ -342,7 +351,7 @@ public class Ground extends JPanel {
         while(b.hasNext()){
             Bad temp = b.next();
             if(temp.isDead()){
-                temp.setImage("妖怪墓碑.png");
+                temp.setImage(badTombstoneImage);
                 deadCreatures.add(temp);
                 b.remove();
             }
@@ -351,7 +360,7 @@ public class Ground extends JPanel {
 
 
         if( status == FIGHTING ) {
-            writeFile();        // TODO:写入文件
+            writeFile();
 
             //System.out.println("Good:"+goodCreatures.size()+                " Bad:"+badCreatures.size()+                " Dead:"+deadCreatures.size());
         }
@@ -448,7 +457,6 @@ public class Ground extends JPanel {
         return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());
     }
 
-    // TODO
     private synchronized void writeFile(){
         // 寻找一个可用的文件
         if (writeFile == null){
@@ -502,33 +510,44 @@ public class Ground extends JPanel {
 
     // TODO
     private synchronized void replaying(){
-
+        /***
+         1.添加读入记录
+         2.根据记录更新某个生物体的位置、状态
+         3.repaint();
+         3.休眠一段时间
+         4.继续读入记录
+         */
         JFileChooser jFileChooser = new JFileChooser(new File("save"));
         jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
         jFileChooser.showDialog(null,null);
         readFile = jFileChooser.getSelectedFile();
 
         if( readFile != null ) {
-            // System.out.println(readFile.toString());
-            InputStream inputStream = null;
-            DataInputStream dataInputStream = null;
+            FileReader fileReader;
+            BufferedReader bufferedReader ;
+
             try {
 
-                inputStream = new FileInputStream(readFile);
-                dataInputStream = new DataInputStream(inputStream);
-                FileReader fileReader = new FileReader(readFile);
-                String name = null;
-                int tempX = -1, tempY = -1;
-                boolean l = false;
-                int i = 0;
+                synchronized (readFile) {
+                    fileReader = new FileReader(readFile);
+                    bufferedReader = new BufferedReader(fileReader);
+                }
+                String name = null, str = null;
+                int x = -1, y = -1;
+                boolean isAlive = false;
+                while ( (str = bufferedReader.readLine()) != null) {
+                    // System.out.println(str);
 
-                while (dataInputStream.available() != 0) {
-                    name = dataInputStream.readUTF();
-                    tempX = dataInputStream.readInt();
-                    tempY = dataInputStream.readInt();
-                    l = dataInputStream.readBoolean();
+                    String []temp = str.split(" ");
+                    name = temp[0];
+                    x = Integer.parseInt(temp[1]);
+                    y = Integer.parseInt(temp[2]);
+                    isAlive = ( temp[3] == "0" )? false:true;
+                    System.out.println(name + " " + x + " " + y + " " + isAlive);
 
-                    System.out.println(name + " " + tempX + " " + tempY + " " + l);
+
+/*
+
 
 
                     if (name == "爷爷") {
@@ -657,16 +676,20 @@ public class Ground extends JPanel {
                             toads[6].setImage("妖怪墓碑.png");
                     }
                 }
-                dataInputStream.close();
-                inputStream.close();
+
+                */
+                }
+                bufferedReader.close();
+                fileReader.close();
             }
-            catch (FileNotFoundException e){
+            catch(FileNotFoundException e) {
                 System.out.println("Here 1");
             }
-            catch(IOException e){
+            catch(IOException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }
+
 //            catch(ClassNotFoundException e){
 //                System.out.println("Here 3");
 //            }
