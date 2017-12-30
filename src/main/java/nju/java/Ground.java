@@ -372,7 +372,6 @@ public class Ground extends JPanel {
         }
 
         if( status == REPLAYING && (! stop) ){
-
             try {
                 String str = null;
                 if (readFile == null) {
@@ -443,6 +442,8 @@ public class Ground extends JPanel {
     }
 
     public enum Status {WELCOME, FIGHTING, REPLAYING , FINISHED , CLOSE};
+
+    public enum GourddollsName{ 大娃 ,二娃 , 三娃 , 四娃, 五娃,  六娃,  七娃};
 
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离
@@ -587,104 +588,35 @@ public class Ground extends JPanel {
                 snake.setImage(snakeImage);
             else
                 snake.setImage(badTombstoneImage);
-        } else if (name.equals("大娃")) {
-            gourdDolls[0].setX(x);
-            gourdDolls[0].setY(y);
-            if (isAlive)
-                gourdDolls[0].setImage(gourddollsImage[0]);
+        } else if(name.substring(1).equals("娃")) {
+
+            GourddollsName g = GourddollsName.valueOf(name);
+            int num = g.ordinal();
+
+            gourdDolls[num].setX(x);
+            gourdDolls[num].setY(y);
+            if(isAlive)
+                gourdDolls[num].setImage(name+".png");
             else
-                gourdDolls[0].setImage(goodTombstoneImage);
-        } else if (name.equals("二娃")) {
-            gourdDolls[1].setX(x);
-            gourdDolls[1].setY(y);
+                gourdDolls[num].setImage(goodTombstoneImage);
+
+        }
+        else {
+            ArrayList<String> ss = new ArrayList<String>();
+            int num = 0;
+            for(String sss:name.replaceAll("[^0-9]", ",").split(",")){
+                if (sss.length()>0)
+                    num = Integer.parseInt(sss);
+            }
+            // System.out.println(num);
+            num -- ;
+            toads[num].setX(x);
+            toads[num].setY(y);
             if (isAlive)
-                gourdDolls[1].setImage(gourddollsImage[1]);
+                toads[num].setImage(toadImage);
             else
-                gourdDolls[1].setImage(goodTombstoneImage);
-        } else if (name.equals("三娃")) {
-            gourdDolls[2].setX(x);
-            gourdDolls[2].setY(y);
-            if (isAlive)
-                gourdDolls[2].setImage(gourddollsImage[2]);
-            else
-                gourdDolls[2].setImage(goodTombstoneImage);
-        } else if (name.equals("四娃")) {
-            gourdDolls[3].setX(x);
-            gourdDolls[3].setY(y);
-            if (isAlive)
-                gourdDolls[3].setImage(gourddollsImage[3]);
-            else
-                gourdDolls[3].setImage(goodTombstoneImage);
-        } else if (name.equals("五娃")) {
-            gourdDolls[4].setX(x);
-            gourdDolls[4].setY(y);
-            if (isAlive)
-                gourdDolls[4].setImage(gourddollsImage[4]);
-            else
-                gourdDolls[4].setImage(goodTombstoneImage);
-        } else if (name.equals("六娃")) {
-            gourdDolls[5].setX(x);
-            gourdDolls[5].setY(y);
-            if (isAlive)
-                gourdDolls[5].setImage(gourddollsImage[5]);
-            else
-                gourdDolls[5].setImage(goodTombstoneImage);
-        } else if (name.equals("七娃")) {
-            gourdDolls[6].setX(x);
-            gourdDolls[6].setY(y);
-            if (isAlive)
-                gourdDolls[6].setImage(gourddollsImage[6]);
-            else
-                gourdDolls[6].setImage(goodTombstoneImage);
-        } else if (name.equals("马仔1号")) { // 蛤蟆精
-            toads[0].setX(x);
-            toads[0].setY(y);
-            if (isAlive)
-                toads[0].setImage(toadImage);
-            else
-                toads[0].setImage(badTombstoneImage);
-        } else if (name.equals("马仔2号")) { // 蛤蟆精
-            toads[1].setX(x);
-            toads[1].setY(y);
-            if (isAlive)
-                toads[1].setImage(toadImage);
-            else
-                toads[1].setImage(badTombstoneImage);
-        } else if (name.equals("马仔3号")) { // 蛤蟆精
-            toads[2].setX(x);
-            toads[2].setY(y);
-            if (isAlive)
-                toads[2].setImage(toadImage);
-            else
-                toads[2].setImage(badTombstoneImage);
-        } else if (name.equals("马仔4号")) { // 蛤蟆精
-            toads[3].setX(x);
-            toads[3].setY(y);
-            if (isAlive)
-                toads[3].setImage(toadImage);
-            else
-                toads[3].setImage(badTombstoneImage);
-        } else if (name.equals("马仔5号")) { // 蛤蟆精
-            toads[4].setX(x);
-            toads[4].setY(y);
-            if (isAlive)
-                toads[4].setImage(toadImage);
-            else
-                toads[4].setImage(badTombstoneImage);
-        } else if (name.equals("马仔6号")) { // 蛤蟆精
-            toads[5].setX(x);
-            toads[5].setY(y);
-            if (isAlive)
-                toads[5].setImage(toadImage);
-            else
-                toads[5].setImage(badTombstoneImage);
-        } else if (name.equals("马仔7号")) { // 蛤蟆精
-            toads[6].setX(x);
-            toads[6].setY(y);
-            if (isAlive)
-                toads[6].setImage(toadImage);
-            else
-                toads[6].setImage(badTombstoneImage);
+                toads[num].setImage(badTombstoneImage);
+
         }
 
         repaint();
