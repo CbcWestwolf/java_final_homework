@@ -3,6 +3,7 @@ package nju.java.creatures.bad;
 import nju.java.Ground;
 import nju.java.creatures.Creatures;
 import nju.java.creatures.good.Good;
+import nju.java.tools.Status;
 
 import java.util.ArrayList;
 
@@ -47,9 +48,9 @@ public class Bad extends Creatures {
     public void run() {
 
         while (!Thread.interrupted()) {
-            if (Ground.getStatus() == Ground.Status.FIGHTING) {
+            if (Ground.getStatus() == Status.FIGHTING) {
                 try {
-                    if (isDead() || Ground.isStop() || Ground.getStatus() != Ground.Status.FIGHTING) {
+                    if (isDead() || Ground.isStop() || Ground.getStatus() != Status.FIGHTING) {
                         //System.out.println("没状态？");
                         Thread.sleep(this.ground.TIME_CLOCK);
                         continue;
@@ -91,7 +92,7 @@ public class Bad extends Creatures {
                 } catch (Exception e) {
 
                 }
-            } else if (Ground.getStatus() == Ground.Status.REPLAYING) {
+            } else if (Ground.getStatus() ==    Status.REPLAYING) {
 
                 try {
                     Thread.sleep(0,Ground.TIME_CLOCK/Ground.REPLAY_CLOCK);

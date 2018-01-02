@@ -8,7 +8,7 @@ import nju.java.creatures.good.Grandpa;
 import nju.java.creatures.bad.ScorpionKing;
 import nju.java.creatures.bad.SnakeQueen;
 import nju.java.creatures.bad.Toad;
-import nju.java.tools.FileFilterTest;
+import nju.java.tools.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,8 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-
-import static nju.java.Ground.Status.*;
 
 /**
  * Created by cbcwestwolf on 2017/12/26.
@@ -40,7 +38,6 @@ public class Ground extends JPanel {
     public static final int PIXEL_WIDTH = 1280; // 左右的长度
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
     public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
-    public static final int CREATURE_NUM = 17; // 所有生物的数量
     public static final String SUFFIX = ".fight";
 
     // 读写的文件
@@ -51,7 +48,7 @@ public class Ground extends JPanel {
 
     // 状态定义
     private static boolean stop; // 玩家是否按下暂停键
-    private static Status status = WELCOME; // 4种状态：未开始，打斗中，回放中
+    private static Status status = Status.WELCOME; // 4种状态：未开始，打斗中，回放中
 
     // 背景图片
     private Image backgroundImage = null; // 背景图片
@@ -179,10 +176,10 @@ public class Ground extends JPanel {
             int key = event.getKeyCode();
 
             if (key == KeyEvent.VK_SPACE){ // 开始
-                if( status == WELCOME){
+                if( status == Status.WELCOME){
 
                     /*初始化生物、计时器和线程*/
-                    status = FIGHTING;
+                    status = Status.FIGHTING;
                     System.out.println("状态从WELCOME转为FIGHTING");
                     initThread();
                     initTimer(TIME_CLOCK);
@@ -198,8 +195,8 @@ public class Ground extends JPanel {
                  4.继续读入记录
                  */
 
-                if( status == WELCOME || status == FINISHED ) {
-                    status = REPLAYING;
+                if( status == Status.WELCOME || status == Status.FINISHED ) {
+                    status = Status.REPLAYING;
                     initThread();
                     initTimer(REPLAY_CLOCK);
                     System.out.println("已经是REPLAYING");
@@ -337,7 +334,7 @@ public class Ground extends JPanel {
                 +badCreatures.size()+" "
                 +deadCreatures.size());*/
         //System.out.println("检查：状态为"+status.toString());
-        if( status == FIGHTING ) {
+        if( status == Status.FIGHTING ) {
             Iterator<Good> g = goodCreatures.iterator();
             while (g.hasNext()) {
                 Good temp = g.next();
@@ -362,7 +359,7 @@ public class Ground extends JPanel {
 
 
             if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
-                status = FINISHED;
+                status = Status.FINISHED;
                 System.out.println("转为FINISHED");
                 for(Thread t : creaturesThreads)
                     t.suspend();
@@ -371,7 +368,7 @@ public class Ground extends JPanel {
             }
         }
 
-        if( status == REPLAYING && (! stop) ){
+        if( status == Status.REPLAYING && (! stop) ){
             try {
                 String str = null;
                 if (readFile == null) {
@@ -392,7 +389,7 @@ public class Ground extends JPanel {
                     fileReader.close();
                     for( Thread t : creaturesThreads )
                         t.suspend();
-                    status = CLOSE;
+                    status = Status.CLOSE;
                     System.out.println("状态转为CLOSE");
                 }
             } catch (FileNotFoundException e) {
@@ -408,10 +405,37 @@ public class Ground extends JPanel {
 
         g.drawImage(backgroundImage, 0, 0, PIXEL_WIDTH, PIXEL_HEIGHT, this);
 
-        g.drawImage(goodTombstoneImage,100,PIXEL_HEIGHT,SPACE,SPACE,this);
-        g.drawImage(badTombstoneImage,100+SPACE,PIXEL_HEIGHT,SPACE,SPACE,this);
+        GourddollsName name = GourddollsName.大娃;
+        for(int i = 0 ; i < 7 ; ++ i) {
+            g.drawImage(gourddollsImage[i], i * (20 + SPACE), PIXEL_HEIGHT, SPACE, SPACE, this);
+            g.drawString(GourddollsName.values()[i].toString(),100*i+30,PIXEL_HEIGHT+SPACE+20);
+        }
+        g.drawImage(grandpaImage,7*(20+SPACE),PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawString("爷爷",100*7+30,PIXEL_HEIGHT+SPACE+20);
+        g.drawImage(scorpionImage,8*(20+SPACE),PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawString("蝎子大王",100*8+20,PIXEL_HEIGHT+SPACE+20);
+        g.drawImage(snakeImage,9*(20+SPACE),PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawString("蛇精",100*9+30,PIXEL_HEIGHT+SPACE+20);
+        g.drawImage(toadImage,10*(20+SPACE),PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawString("小马仔",100*10+25,PIXEL_HEIGHT+SPACE+20);
+        g.drawImage(goodTombstoneImage,11*(20+SPACE),PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawString("正方墓",100*11+25,PIXEL_HEIGHT+SPACE+20);
+        g.drawImage(badTombstoneImage,12*(20+SPACE),PIXEL_HEIGHT,SPACE,SPACE,this);
+        g.drawString("反方墓",100*12+25,PIXEL_HEIGHT+SPACE+20);
 
-        if( status != WELCOME ) {
+        if( status == Status.WELCOME )
+            g.drawString("按下空格开始游戏",SPACE,PIXEL_HEIGHT/2);
+        if( status == Status.WELCOME || status == Status.FINISHED ) {
+            g.drawString("按下L开始回放", SPACE, PIXEL_HEIGHT / 2 + 20);
+        }
+        if( status == Status.FIGHTING || status == Status.REPLAYING) {
+            if (stop)
+                g.drawString("按下P恢复", SPACE, PIXEL_HEIGHT / 2 + 40);
+            else
+                g.drawString("按下P暂停", SPACE, PIXEL_HEIGHT / 2 + 40);
+        }
+
+        if( status != Status.WELCOME ) {
             if (goodCreatures != null)
                 for (Good c : goodCreatures) {
                     g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
@@ -438,12 +462,7 @@ public class Ground extends JPanel {
         super.paint(g);
         paintImage(g);
         //System.out.println("调用paint()");
-        g.drawString("按下空格开始游戏，按下L开始回放",0,PIXEL_HEIGHT);
     }
-
-    public enum Status {WELCOME, FIGHTING, REPLAYING , FINISHED , CLOSE};
-
-    public enum GourddollsName{ 大娃 ,二娃 , 三娃 , 四娃, 五娃,  六娃,  七娃};
 
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离

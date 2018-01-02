@@ -7,16 +7,11 @@ import javax.swing.*;
 public class Main extends JFrame{
 
     public Main(){
-        initUI();
-    }
-
-    private void initUI(){
-
         Ground ground = new Ground();
         add(ground);  // 在GameBourd
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50+100);
+        setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50+125);
         setLocationRelativeTo(null);
         setTitle("葫芦娃");
     }
