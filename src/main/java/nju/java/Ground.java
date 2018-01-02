@@ -31,9 +31,9 @@ import static nju.java.Ground.Status.*;
 public class Ground extends JPanel {
 
     // 常量定义
-    public static final int STEP = 10; // 每次移动的距离
-    public static final int SPACE = 8*STEP ; // 图片的边长   (必须是STEP的整数倍）
-    public static final int DISTANCE = 6*STEP; // 攻击范围
+    public static final int STEP = 5; // 每次移动的距离
+    public static final int SPACE = 16*STEP ; // 图片的边长   (必须是STEP的整数倍）
+    public static final int DISTANCE = 12*STEP; // 攻击范围
     public static final int TIME_CLOCK = 100; // 线程休眠时间 （毫秒）
     public static final int REPLAY_CLOCK = 1;
     public static final int PIXEL_HEIGHT = 720; // 上下的高度（像素点）
@@ -237,18 +237,18 @@ public class Ground extends JPanel {
     private void initCreature(){
 
         // 初始化爷爷
-        grandpa = new Grandpa(0,MAX_Y/2,this);
+        grandpa = new Grandpa(4*SPACE/STEP,MAX_Y/2,this);
         grandpa.setImage(grandpaImage);
 
         // 初始化葫芦娃
         gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
-        gourdDolls[0] = new GourdDolls(0,1*4,this,0);
-        gourdDolls[1] = new GourdDolls(1*SPACE/STEP,2*SPACE/STEP,this,1);
-        gourdDolls[2] = new GourdDolls(2*SPACE/STEP,3*SPACE/STEP,this,2);
-        gourdDolls[3] = new GourdDolls(3*SPACE/STEP,4*SPACE/STEP,this,3);
-        gourdDolls[4] = new GourdDolls(2*SPACE/STEP,5*SPACE/STEP,this,4);
-        gourdDolls[5] = new GourdDolls(1*SPACE/STEP,6*SPACE/STEP,this,5);
-        gourdDolls[6] = new GourdDolls(0,7*SPACE/STEP,this,6);
+        gourdDolls[0] = new GourdDolls(4*SPACE/STEP,1*4,this,0);
+        gourdDolls[1] = new GourdDolls(5*SPACE/STEP,2*SPACE/STEP,this,1);
+        gourdDolls[2] = new GourdDolls(6*SPACE/STEP,3*SPACE/STEP,this,2);
+        gourdDolls[3] = new GourdDolls(7*SPACE/STEP,4*SPACE/STEP,this,3);
+        gourdDolls[4] = new GourdDolls(6*SPACE/STEP,5*SPACE/STEP,this,4);
+        gourdDolls[5] = new GourdDolls(5*SPACE/STEP,6*SPACE/STEP,this,5);
+        gourdDolls[6] = new GourdDolls(4*SPACE/STEP,7*SPACE/STEP,this,6);
         for(int i = 0 ; i < 7 ; ++ i)
             gourdDolls[i].setImage(gourddollsImage[i]);
 
@@ -262,21 +262,21 @@ public class Ground extends JPanel {
         }
 
         // 初始化蛇精
-        snake = new SnakeQueen(MAX_X,MAX_Y/2-SPACE/STEP,this);
+        snake = new SnakeQueen(MAX_X-3*SPACE/STEP,MAX_Y/2-SPACE/STEP,this);
         snake.setImage(snakeImage);
 
         // 初始化蝎子精
-        scorpion =  new ScorpionKing(MAX_X,MAX_Y/2+SPACE/STEP,this);
+        scorpion =  new ScorpionKing(MAX_X-3*SPACE/STEP,MAX_Y/2+SPACE/STEP,this);
         scorpion.setImage(scorpionImage);
 
         toads = new Toad[7];
         for(int i = 0 ; i < 7 ; ++ i){
             if( i != 3 && i != 5)
-                toads[i] = new Toad(MAX_X,i*SPACE/STEP,this,i);
+                toads[i] = new Toad(MAX_X-3*SPACE/STEP,i*SPACE/STEP,this,i);
             else if (i == 3 )
-                toads[i] = new Toad(MAX_X,7*SPACE/STEP,this,i);
+                toads[i] = new Toad(MAX_X-3*SPACE/STEP,7*SPACE/STEP,this,i);
             else
-                toads[i] = new Toad(MAX_X,8*SPACE/STEP,this,i);
+                toads[i] = new Toad(MAX_X-3*SPACE/STEP,8*SPACE/STEP,this,i);
             toads[i].setImage(toadImage);
         }
 

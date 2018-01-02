@@ -25,4 +25,5 @@ public class Main extends JFrame{
         Main gameBoard = new Main();
         gameBoard.setVisible(true);
     }
+
 }

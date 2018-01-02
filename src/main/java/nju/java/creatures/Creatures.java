@@ -8,10 +8,10 @@ import java.awt.*;
 import java.io.Serializable;
 import java.net.URL;
 
-
 /**
  * Created by cbcwestwolf on 2017/12/26.
  */
+
 public abstract class Creatures implements Runnable ,Serializable {
 
     private int x ; // [ 0 , MAX_X ]
