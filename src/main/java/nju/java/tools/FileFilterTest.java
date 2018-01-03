@@ -3,8 +3,12 @@ package nju.java.tools;
 import javax.swing.*;
 import java.io.File;
 
-/**
- * Created by cbcwestwolf on 2017/12/30.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class is used to restrain the file type that player can open.
+ *
+ * @see nju.java.Ground
  */
 public class FileFilterTest extends javax.swing.filechooser.FileFilter{
     public boolean accept(java.io.File f) {

@@ -9,8 +9,14 @@ import java.awt.*;
 import java.io.Serializable;
 import java.net.URL;
 
-/**
- * Created by cbcwestwolf on 2017/12/26.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class define the basic properties of creatures.
+ * More specific properties of creatuures is defined in Good class and Bad class.
+ *
+ * @see nju.java.creatures.good.Good
+ * @see nju.java.creatures.bad.Bad
  */
 
 public abstract class Creatures implements Runnable ,Serializable {

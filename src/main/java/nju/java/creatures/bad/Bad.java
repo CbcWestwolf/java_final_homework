@@ -9,8 +9,13 @@ import java.util.ArrayList;
 
 import static nju.java.tools.ConstantValue.*;
 
-/**
- * Created by cbcwestwolf on 2017/12/28.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class define the specific properties of Bad creatuures
+ * The basic properties is defined in Creatures class.
+ *
+ * @see nju.java.creatures.Creatures
  */
 public abstract class Bad extends Creatures {
     public Bad(int x, int y, BackEnd backEnd) {

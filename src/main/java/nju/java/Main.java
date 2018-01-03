@@ -1,9 +1,17 @@
-package nju.java; /**
- * Created by cbcwestwolf on 2017/12/26.
- */
+package nju.java;
 
 import javax.swing.*;
 import static nju.java.tools.ConstantValue.*;
+
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class is the entry of the game.
+ * It uses BackEnd class and Ground class to perfome the game.
+ *
+ * @see nju.java.Ground
+ * @see nju.java.BackEnd
+ */
 
 public class Main extends JFrame{
 

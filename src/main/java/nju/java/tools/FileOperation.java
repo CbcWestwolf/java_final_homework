@@ -10,8 +10,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by cbcwestwolf on 2018/1/3.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class is used to do IO operation for BackEnd class.
+ * It is used in BackEnd class.
+ *
+ * @see nju.java.BackEnd
  */
 public class FileOperation {
 

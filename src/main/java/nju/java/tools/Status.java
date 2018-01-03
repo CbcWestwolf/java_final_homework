@@ -1,7 +1,9 @@
 package nju.java.tools;
 
-/**
- * Created by cbcwestwolf on 2018/1/2.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This enum define the status of the game.
  */
 public enum Status {
     WELCOME, FIGHTING, REPLAYING , FINISHED , CLOSE

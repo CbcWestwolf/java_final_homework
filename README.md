@@ -60,12 +60,6 @@
 
 
 
-## 封装
-
-详情见javadoc文档
-
-
-
 ## 多态
 
 `Ground`类中的3个`ArrayList`均使用泛型实现，体现了多态：
@@ -127,4 +121,21 @@ public synchronized void check(){
 	...
 }
 ```
+
+## 集合与泛型
+
+程序中用到的集合是`ArrayList`，其中主要是`ArrayList<Good>`、`ArrayList<Bad>`和`ArrayList<Creatures>`，分别用于存储正方(`GoodCreatures`)、反方(`BacCreatures`)与死亡的正反方(`DeadCreatures`)。
+
+之所以用集合而不是数组，是因为每个时钟周期的检查中，会将`GoodCreatures`和`BadCreatures`中已经死亡的角色移动到`DeadCreatures`中，而数组无法添加删除元素。
+
+## 线程安全
+
+* `BackEnd`类中的线程安全
+  * `check()`方法使用`synchronized`修饰，因为该方法需要随时检查`GoodCreatures`、`BacCreatures`和`DeadCreatures`，如果被打断，将会出现线程不安全的情况。
+  * `replaying()`方法使用`synchronized`修饰，因为该方法实现了对角色位置、图片的设置，一旦被打断，可能出现角色位置或图片不一致的情况。
+* `FileOperation`类中的线程安全：`writeFile()`方法使用`synchronized`修饰，因为该方法涉及写文件。
+
+## 封装与注解
+
+用`@author`和`@see`等注解编写了javadoc，详情请见javadoc文档
 

@@ -15,8 +15,15 @@ import java.io.*;
 import java.net.URL;
 
 
-/**
- * Created by cbcwestwolf on 2017/12/26.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class is used to paint the gmae for players.
+ * The inner logic of the game is defined in BackEnd class.
+ * It is used by Main class.
+ *
+ * @see nju.java.BackEnd
+ * @see nju.java.Main
  */
 public class Ground extends JPanel {
 

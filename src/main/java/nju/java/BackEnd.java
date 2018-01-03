@@ -23,8 +23,15 @@ import static nju.java.tools.ConstantValue.*;
 import static nju.java.tools.ConstantValue.SPACE;
 import static nju.java.tools.ConstantValue.STEP;
 
-/**
- * Created by cbcwestwolf on 2018/1/3.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This class is used to define the inner logic of the game.
+ * The painting of the game is done in Ground class.
+ * It is used by Main class.
+ *
+ * @see nju.java.Ground
+ * @see nju.java.Main
  */
 public class BackEnd extends JFrame {
 
@@ -157,7 +164,6 @@ public class BackEnd extends JFrame {
         timer = new Timer(time,timerTask);
         timer.start();
     }
-
 
     public void initThread() {
 
@@ -313,17 +319,11 @@ public class BackEnd extends JFrame {
         int x = -1, y = -1;
         boolean isAlive = false;
 
-        // System.out.println(str);
-
         String[] temp = str.split(" ");
         name = temp[0];
         x = Integer.parseInt(temp[1]);
         y = Integer.parseInt(temp[2]);
         isAlive = (temp[3].equals("0")) ? false : true;
-
-//        //System.out.println(name + " " + x + " " + y + " " + isAlive);
-//        if( ! isAlive)
-//            System.out.println(name + " " + x + " " + y + " " + isAlive);
 
         if (name.equals("爷爷") ) {
             grandpa.setX(x);

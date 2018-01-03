@@ -1,7 +1,10 @@
 package nju.java.tools;
 
-/**
- * Created by cbcwestwolf on 2018/1/3.
+/***
+ * @author cbcwestwolf
+ * <br>
+ * This interface define some canstant values.
+ *
  */
 public interface ConstantValue {
     // 常量定义
