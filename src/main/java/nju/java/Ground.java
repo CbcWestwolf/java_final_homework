@@ -38,10 +38,8 @@ public class Ground extends JPanel {
     public static final int PIXEL_WIDTH = 1280; // 左右的长度
     public static final int MAX_X = (PIXEL_WIDTH-SPACE) / STEP ;
     public static final int MAX_Y = (PIXEL_HEIGHT-SPACE) / STEP ;
-    public static final String SUFFIX = ".fight";
 
     // 读写的文件
-    private File writeFile = null;
     private File readFile = null;
     private FileReader fileReader;
     private BufferedReader bufferedReader ;
@@ -85,8 +83,7 @@ public class Ground extends JPanel {
     public Ground(){
         setFocusable(true); // 设置可见
         addKeyListener(new TAdapter());// 添加键盘监视器
-        loadBackground(); // 装载场景
-        loadPictures(); // 为各种生物加载图像
+        loadPictures(); // 加载图像
     }
 
     public static boolean isStop() {
@@ -106,48 +103,24 @@ public class Ground extends JPanel {
         return badCreatures;
     }
 
-    private void loadBackground(){
-        // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
-        URL loc = this.getClass().getClassLoader().getResource("背景2.png");
-        ImageIcon iia = new ImageIcon(loc); // Image是抽象类，所以只能通过ImageIcon来创建
-        backgroundImage = iia.getImage();
-
-    }
-
     private void loadPictures(){
-        URL url = this.getClass().getClassLoader().getResource("爷爷.png");
-        ImageIcon imageIcon = new ImageIcon(url);
+
+        // 背景分辨率为 1280*720 , 即16:9 。 每个格子的边长为80分辨率
+        URL url = this.getClass().getClassLoader().getResource("背景2.png");
+        ImageIcon imageIcon = new ImageIcon(url); // Image是抽象类，所以只能通过ImageIcon来创建
+        backgroundImage = imageIcon.getImage();
+
+        url = this.getClass().getClassLoader().getResource("爷爷.png");
+        imageIcon = new ImageIcon(url);
         grandpaImage = imageIcon.getImage();
 
         gourddollsImage = new Image[7];
 
-        url = this.getClass().getClassLoader().getResource("大娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[0] = imageIcon.getImage();
-
-        url = this.getClass().getClassLoader().getResource("二娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[1] = imageIcon.getImage();
-
-        url = this.getClass().getClassLoader().getResource("三娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[2] = imageIcon.getImage();
-
-        url = this.getClass().getClassLoader().getResource("四娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[3] = imageIcon.getImage();
-
-        url = this.getClass().getClassLoader().getResource("五娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[4] = imageIcon.getImage();
-
-        url = this.getClass().getClassLoader().getResource("六娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[5] = imageIcon.getImage();
-
-        url = this.getClass().getClassLoader().getResource("七娃.png");
-        imageIcon = new ImageIcon(url);
-        gourddollsImage[6] = imageIcon.getImage();
+        for(int i = 0 ; i < 7 ; ++ i){
+            url = this.getClass().getClassLoader().getResource(GourddollsName.values()[i].toString()+".png");
+            imageIcon = new ImageIcon(url);
+            gourddollsImage[i] = imageIcon.getImage();
+        }
 
         url = this.getClass().getClassLoader().getResource("蝎子精.png");
         imageIcon = new ImageIcon(url);
@@ -238,16 +211,11 @@ public class Ground extends JPanel {
         grandpa.setImage(grandpaImage);
 
         // 初始化葫芦娃
-        gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型
-        gourdDolls[0] = new GourdDolls(4*SPACE/STEP,1*4,this,0);
-        gourdDolls[1] = new GourdDolls(5*SPACE/STEP,2*SPACE/STEP,this,1);
-        gourdDolls[2] = new GourdDolls(6*SPACE/STEP,3*SPACE/STEP,this,2);
-        gourdDolls[3] = new GourdDolls(7*SPACE/STEP,4*SPACE/STEP,this,3);
-        gourdDolls[4] = new GourdDolls(6*SPACE/STEP,5*SPACE/STEP,this,4);
-        gourdDolls[5] = new GourdDolls(5*SPACE/STEP,6*SPACE/STEP,this,5);
-        gourdDolls[6] = new GourdDolls(4*SPACE/STEP,7*SPACE/STEP,this,6);
-        for(int i = 0 ; i < 7 ; ++ i)
+        gourdDolls = new GourdDolls[7]; // 默认为鹤翼阵型for
+        for(int i = 0 ; i < 7 ; ++ i) {
+            gourdDolls[i] = new GourdDolls( (7 - Math.abs(i-3))*SPACE/STEP, (i+1)*SPACE/STEP,this,i);
             gourdDolls[i].setImage(gourddollsImage[i]);
+        }
 
         // 把爷爷和葫芦娃添加到队列中
         goodCreatures = new ArrayList<Good>();
@@ -329,11 +297,6 @@ public class Ground extends JPanel {
     // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
     public synchronized void check(){
 
-        /*System.out.println("检查生物:3个列表中的生物个数为:"
-                +goodCreatures.size()+" "
-                +badCreatures.size()+" "
-                +deadCreatures.size());*/
-        //System.out.println("检查：状态为"+status.toString());
         if( status == Status.FIGHTING ) {
             Iterator<Good> g = goodCreatures.iterator();
             while (g.hasNext()) {
@@ -355,7 +318,7 @@ public class Ground extends JPanel {
                 }
             }
 
-            writeFile();
+            FileOperation.writeFile(goodCreatures,badCreatures,deadCreatures);
 
 
             if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
@@ -398,7 +361,6 @@ public class Ground extends JPanel {
                 e.printStackTrace();
             }
         }
-
     }
 
     private synchronized void paintImage(Graphics g) {
@@ -434,25 +396,20 @@ public class Ground extends JPanel {
             else
                 g.drawString("按下P暂停", SPACE, PIXEL_HEIGHT / 2 + 40);
         }
+        g.drawString("按下Esc退出",SPACE,PIXEL_HEIGHT / 2 + 60);
 
         if( status != Status.WELCOME ) {
             if (goodCreatures != null)
                 for (Good c : goodCreatures) {
                     g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
-                    //System.out.println("实际位置:"+c.toString()+" "+c.getX()+" "+c.getY());
-//                    if( c.toString() == "爷爷" ) {
-//                        System.out.println((c == grandpa));
-//                    }
                 }
             if (badCreatures != null)
                 for (Bad c : badCreatures) {
                     g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
-                    //System.out.println("实际位置:" + c.toString() + " " + c.getX() + " " + c.getY());
                 }
             if (deadCreatures != null)
                 for (Creatures c : deadCreatures) {
                     g.drawImage(c.getImage(), c.getX() * STEP, c.getY() * STEP, SPACE, SPACE, this);
-                    //System.out.println("实际位置:" + c.toString() + " " + c.getX() + " " + c.getY());
                 }
         }
     }
@@ -467,7 +424,7 @@ public class Ground extends JPanel {
     // Creature API : 攻击成功返回boolean
     // 检查的重点：距离
     public boolean requireAttack(Creatures attacker, Creatures attacked){
-        int distance = distance(attacker,attacked);
+        int distance = Creatures.distance(attacker,attacked);
         if( distance > 0 && distance <= DISTANCE/STEP ){ // 可以攻击
             // 对双方的血量进行减少
             int attackerBlood = attacker.getBlood()-attacked.getPower()/2;
@@ -509,63 +466,6 @@ public class Ground extends JPanel {
         c.setX(newX);
         c.setY(newY);
         return true;
-    }
-
-    // Creatures API:
-    // 返回两个生物体在坐标轴上的距离(x距离+y距离
-    public final int distance(Creatures a, Creatures b){
-        return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());
-    }
-
-    private synchronized void writeFile(){
-        // 寻找一个可用的文件
-        if (writeFile == null){
-            Date now = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-            String str = "save"+File.separator+simpleDateFormat.format(now)+SUFFIX;
-            // System.out.println(str);
-            writeFile = new File(str);
-        }
-
-        // 把三个ArrayList中的对象都写进文件
-        try {
-            FileWriter fileWriter = new FileWriter(writeFile,true);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-            ArrayList<Creatures> temp = new ArrayList<Creatures>();
-            if( ! goodCreatures.isEmpty() )
-                for( Creatures g : goodCreatures )
-                    temp.add(g);
-            if( ! badCreatures.isEmpty() )
-                for( Creatures b : badCreatures )
-                    temp.add(b);
-
-            for( Creatures c : temp){
-                bufferedWriter.write(c.toString()+" "+c.getX()+" "+c.getY()+" "+1 );
-                bufferedWriter.newLine();
-                //System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+true);
-            }
-
-            temp.clear();
-
-            if( ! deadCreatures.isEmpty() )
-                for( Creatures d : deadCreatures )
-                    temp.add(d);
-            for( Creatures c : temp){
-                bufferedWriter.write(c.toString()+" "+c.getX()+" "+c.getY()+" "+ 0 );
-                bufferedWriter.newLine();
-                //System.out.println(c.toString()+" "+c.getX()+" "+c.getY()+" "+false);
-            }
-            bufferedWriter.close();
-            fileWriter.close();
-        }
-        catch (FileNotFoundException e){
-
-        }
-        catch (IOException e){
-
-        }
-
     }
 
     private synchronized void replaying(String str) {

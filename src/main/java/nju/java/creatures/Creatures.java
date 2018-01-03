@@ -100,4 +100,8 @@ public abstract class Creatures implements Runnable ,Serializable {
 
     //public abstract void Walk(); // 向Ground请求位移，Ground检查无误后调用Creatures的位移函数
 
+    public static final int distance(Creatures a, Creatures b){
+        return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());
+    }
+
 }

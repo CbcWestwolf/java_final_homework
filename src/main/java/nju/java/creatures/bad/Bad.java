@@ -20,7 +20,7 @@ public class Bad extends Creatures {
         ArrayList<Good> result = new ArrayList<Good>();
 
         for (Good g : all) {
-            if (this.ground.distance(this, g) <= Ground.DISTANCE / Ground.STEP)
+            if (distance(this, g) <= Ground.DISTANCE / Ground.STEP)
                 result.add(g);
         }
         return result;
@@ -32,8 +32,8 @@ public class Bad extends Creatures {
         int minDistance = Integer.MAX_VALUE;
         Good result = null;
         for (Good a : all) {
-            if (this.ground.distance(this, a) < minDistance) {// TODO:判断
-                minDistance = this.ground.distance(this, a);
+            if (distance(this, a) < minDistance) {// TODO:判断
+                minDistance = distance(this, a);
                 result = a;
             }
         }

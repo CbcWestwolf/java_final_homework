@@ -89,7 +89,7 @@ public class Good extends Creatures {
         ArrayList<Bad> result = new ArrayList<Bad>();
 
         for( Bad b : all ){
-            if( this.ground.distance(this,b) <= Ground.DISTANCE/Ground.STEP )
+            if( distance(this,b) <= Ground.DISTANCE/Ground.STEP )
                 result.add(b);
         }
         return result;
@@ -101,8 +101,8 @@ public class Good extends Creatures {
         int minDistance = Integer.MAX_VALUE;
         Bad result = null;
         for( Bad b : all ) {
-            if (this.ground.distance(this, b) < minDistance) {
-                minDistance = this.ground.distance(this, b);
+            if (distance(this, b) < minDistance) {
+                minDistance = distance(this, b);
                 result = b;
             }
         }
