@@ -7,6 +7,8 @@ import nju.java.tools.Status;
 
 import java.util.ArrayList;
 
+import static nju.java.ConstantValue.*;
+
 /**
  * Created by cbcwestwolf on 2017/12/28.
  */
@@ -20,7 +22,7 @@ public abstract class Bad extends Creatures {
         ArrayList<Good> result = new ArrayList<Good>();
 
         for (Good g : all) {
-            if (distance(this, g) <= Ground.DISTANCE / Ground.STEP)
+            if (distance(this, g) <=  DISTANCE / STEP )
                 result.add(g);
         }
         return result;
@@ -52,7 +54,7 @@ public abstract class Bad extends Creatures {
                 try {
                     if (isDead() || Ground.isStop() || Ground.getStatus() != Status.FIGHTING) {
                         //System.out.println("没状态？");
-                        Thread.sleep(this.ground.TIME_CLOCK);
+                        Thread.sleep(TIME_CLOCK);
                         continue;
                     }
 
@@ -87,7 +89,7 @@ public abstract class Bad extends Creatures {
                         }
                     }
 
-                    Thread.sleep(this.ground.TIME_CLOCK);
+                    Thread.sleep(TIME_CLOCK);
 
                 } catch (Exception e) {
 
@@ -95,7 +97,7 @@ public abstract class Bad extends Creatures {
             } else if (Ground.getStatus() ==    Status.REPLAYING) {
 
                 try {
-                    Thread.sleep(0,Ground.TIME_CLOCK/Ground.REPLAY_CLOCK);
+                    Thread.sleep(0,TIME_CLOCK/REPLAY_CLOCK);
 
                 }
                 catch(InterruptedException e){

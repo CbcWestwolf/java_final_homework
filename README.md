@@ -82,8 +82,10 @@ private ArrayList<Creatures> deadCreatures = null;
 
 ### 单一职责原则
 
-* `Ground`类只负责显示
+* `Ground`类只负责游戏画面显示
 * `BackEnd`类只负责游戏的逻辑
+* `ConstantValue`接口只负责提供全局常量
+* `Creatures`类（包括其子类）只负责角色的定义
 
 ### 里氏替换原则
 

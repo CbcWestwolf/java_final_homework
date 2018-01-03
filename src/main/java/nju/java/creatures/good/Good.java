@@ -4,6 +4,7 @@ import nju.java.Ground;
 import nju.java.creatures.Creatures;
 import nju.java.creatures.bad.Bad;
 import nju.java.tools.Status;
+import static nju.java.ConstantValue.*;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,7 @@ public abstract class Good extends Creatures {
                 try {
                     if (isDead() || Ground.isStop() || Ground.getStatus() != Status.FIGHTING) {
                         //System.out.println("没状态？");
-                        Thread.sleep(this.ground.TIME_CLOCK);
+                        Thread.sleep(TIME_CLOCK);
                         continue;
                     }
 
@@ -58,7 +59,7 @@ public abstract class Good extends Creatures {
                         }
                     }
 
-                    Thread.sleep(this.ground.TIME_CLOCK);
+                    Thread.sleep(TIME_CLOCK);
 
                 } catch (Exception e) {
 
@@ -66,7 +67,7 @@ public abstract class Good extends Creatures {
             } else if (Ground.getStatus() == Status.REPLAYING) {
 
                 try {
-                    Thread.sleep(0,Ground.TIME_CLOCK/Ground.REPLAY_CLOCK);
+                    Thread.sleep(0,REPLAY_CLOCK);
                 }
                 catch(InterruptedException e){
                     e.printStackTrace();
@@ -87,7 +88,7 @@ public abstract class Good extends Creatures {
         ArrayList<Bad> result = new ArrayList<Bad>();
 
         for( Bad b : all ){
-            if( distance(this,b) <= Ground.DISTANCE/Ground.STEP )
+            if( distance(this,b) <= DISTANCE/STEP )
                 result.add(b);
         }
         return result;

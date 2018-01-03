@@ -3,6 +3,7 @@ package nju.java;
 import nju.java.creatures.Creatures;
 import nju.java.creatures.bad.Bad;
 import nju.java.creatures.good.Good;
+import static nju.java.ConstantValue.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -14,7 +15,7 @@ import java.util.Date;
  */
 public class FileOperation {
 
-    public static final String SUFFIX = ".fight";
+
     private static File writeFile = null;
 
     public static synchronized void writeFile(ArrayList<Good> goodCreatures,

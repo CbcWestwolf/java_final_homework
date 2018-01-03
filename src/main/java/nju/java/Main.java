@@ -3,6 +3,7 @@ package nju.java; /**
  */
 
 import javax.swing.*;
+import static nju.java.ConstantValue.*;
 
 public class Main extends JFrame{
 
@@ -11,7 +12,7 @@ public class Main extends JFrame{
         add(ground);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50+125);
+        setSize(PIXEL_WIDTH+20, PIXEL_HEIGHT+50+125);
         setLocationRelativeTo(null);
         setTitle("葫芦娃");
     }
