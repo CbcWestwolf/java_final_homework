@@ -115,7 +115,7 @@ public class BackEnd extends JFrame {
         goodCreatures.add(grandpa);
         for( GourdDolls g : gourdDolls ) {
             goodCreatures.add(g);
-            //System.out.println(g);
+
         }
 
         // 初始化蛇精
@@ -142,7 +142,7 @@ public class BackEnd extends JFrame {
         badCreatures.add(scorpion);
         for(Bad c : toads) {
             badCreatures.add(c);
-            //System.out.println(c);
+
         }
 
         deadCreatures = new ArrayList<Creatures>();
@@ -188,7 +188,7 @@ public class BackEnd extends JFrame {
             }
         for (Thread t : creaturesThreads)
             t.start();
-        System.out.println("初始化所有线程");
+        //System.out.println("初始化所有线程");
     }
 
     /**
@@ -227,7 +227,6 @@ public class BackEnd extends JFrame {
 
             if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
                 status = Status.FINISHED;
-                System.out.println("转为FINISHED");
 
                 for (Thread t : creaturesThreads)
                     t.suspend();
@@ -251,7 +250,6 @@ public class BackEnd extends JFrame {
                     t.suspend();
 
                 status = Status.CLOSE;
-                System.out.println("状态转为CLOSE");
             }
 
 
@@ -272,8 +270,7 @@ public class BackEnd extends JFrame {
             // 对双方的血量进行减少
             int attackerBlood = attacker.getBlood()-attacked.getPower()/2;
             int attackedBlood = attacked.getBlood()-attacker.getPower();
-            System.out.println(attacker.toString()+"血量降为"+attackerBlood+" "
-                    +attacked.toString()+" 血量降为"+attackedBlood);
+            // System.out.println(attacker.toString()+"血量降为"+attackerBlood+" "+attacked.toString()+" 血量降为"+attackedBlood);
             attacker.setBlood(attackerBlood);
             attacked.setBlood(attackedBlood);
             return true;
@@ -329,6 +326,8 @@ public class BackEnd extends JFrame {
         boolean isAlive = false;
 
         String[] temp = str.split(" ");
+        if( temp.length != 4 )
+            return;
         name = temp[0];
         x = Integer.parseInt(temp[1]);
         y = Integer.parseInt(temp[2]);

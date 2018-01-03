@@ -29,7 +29,7 @@ public abstract class Good extends Creatures {
             if (BackEnd.getStatus() == Status.FIGHTING) {
                 try {
                     if (isDead() || BackEnd.isStop() || BackEnd.getStatus() != Status.FIGHTING) {
-                        //System.out.println("没状态？");
+
                         Thread.sleep(TIME_CLOCK);
                         continue;
                     }

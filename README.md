@@ -1,28 +1,12 @@
 # 葫芦娃期末作业
 
-##### 要求
-
-- README.md
-- 封装
-- 继承
-- 多态
-- 设计原则
-- 异常处理
-- 集合类型+泛型
-- 注解
-- 线程安全
-- 单元测试
-- 说明战斗事宜（例如行进速度有多快，是不是每个生物体速度一样，死亡概率谁大谁小等）
-- 最精彩的某一次战斗过程记录文件连同代码一并提交
-- 用注释生成文档（Javadoc）
-
+**陈博钏 151220007**
 
 
 ## 实现效果
 
 1. 按下`空格键`之后，正方按`鹤翼`阵型出发；反方以`长蛇`阵型出发；
-2. 游戏目标：
-   - 击败所有敌人
+2. 游戏目标：击败所有敌人
 3. 打斗开始前或者打斗结束后按下`L`可实现读取文件并回放
 4. 回放和打斗过程中按下`P`可暂停
 
@@ -56,7 +40,7 @@
 
 
 
-## 继承——UML类图说明
+## 封装与继承——UML类图说明
 
 抽象类*Creatures*有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
 
@@ -109,6 +93,12 @@ public static synchronized void writeFile(ArrayList<Good> goodCreatures,        
     
     catch (FileNotFoundException e){
             writeFile = defaultFile;
+      	    try {
+                fileWriter = new FileWriter(writeFile, true);
+                bufferedWriter = new BufferedWriter(fileWriter);
+            } catch (IOException ee) {
+                ee.printStackTrace();
+            }
             throw new FileNotFoundException("没有找到写入的文件");
 	}
 }
@@ -132,6 +122,18 @@ public synchronized void check(){
 
 之所以用集合而不是数组，是因为每个时钟周期的检查中，会将`GoodCreatures`和`BadCreatures`中已经死亡的角色移动到`DeadCreatures`中，而数组无法添加删除元素。
 
+## 注解
+
+用`@author`和`@see`等注解编写了javadoc，详情请见javadoc文档
+
+## 输入输出
+
+`FileOperation`类中采用的输入输出类有
+
+* File：用于获取文件
+* `FileReader`与`BufferedReader`：用于读取文件
+* `FileWriter`与`BufferedWriter`：用户写入文件
+
 ## 线程安全
 
 * `BackEnd`类中的线程安全
@@ -139,16 +141,16 @@ public synchronized void check(){
   * `replaying()`方法使用`synchronized`修饰，因为该方法实现了对角色位置、图片的设置，一旦被打断，可能出现角色位置或图片不一致的情况。
 * `FileOperation`类中的线程安全：`writeFile()`方法使用`synchronized`修饰，因为该方法涉及写文件。
 
-## 封装与注解
 
-用`@author`和`@see`等注解编写了javadoc，详情请见javadoc文档
 
 ## 单元测试
 
 * 对角色的测试以`Grandpa`为代表，有3个测试方法`testString`、`testDead`、`testLocation`和`testImage()`，分别测试`Grandpa`的`toString()`、`isDead()`、`setBlood()`、`getBlood()`、`getX()`、`getY()`、`setX()`、`setY()`、`getPower()`、`getImage()`、`setImage()`等方法的正确性。由于其它角色的设置与`Grandpa`具有相似性，便不需再进行单元测试
 * 由于`BackEnd`、`Ground`和`Main`等与GUI相关，所以不进行单元测试。
 
+## 最精彩的战斗
 
+存放在`save/default.fight`中：葫芦娃大获全胜，爷爷运筹帷幄！
 
 
 

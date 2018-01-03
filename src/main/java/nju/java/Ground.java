@@ -127,7 +127,7 @@ public class Ground extends JPanel {
 
                     /*初始化生物、计时器和线程*/
                     BackEnd.status = Status.FIGHTING;
-                    System.out.println("状态从WELCOME转为FIGHTING");
+                    //System.out.println("状态从WELCOME转为FIGHTING");
                     backEnd.initThread();
                     backEnd.initTimer(TIME_CLOCK);
                 }
@@ -135,30 +135,24 @@ public class Ground extends JPanel {
             else if(key == KeyEvent.VK_L
                     && ( BackEnd.status == Status.WELCOME || BackEnd.status == Status.FINISHED ) ) { // 回放
 
-                /*
-                 1.添加读入记录
-                 2.根据记录更新某个生物体的位置、状态
-                 3.repaint();
-                 3.休眠一段时间
-                 4.继续读入记录
-                 */
-
-                BackEnd.status = Status.REPLAYING;
-                backEnd.initThread();
-                backEnd.initTimer(REPLAY_CLOCK);
-                System.out.println("REPLAYING");
 
                 int flag = 1;
                 JFileChooser jFileChooser = null;
                 FileFilterTest fileFilter = null;
-                while (flag != JFileChooser.APPROVE_OPTION) {
-                    fileFilter = new FileFilterTest();
-                    jFileChooser = new JFileChooser(new File("save"));
-                    jFileChooser.setFileFilter(fileFilter);
-                    jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
-                    flag = jFileChooser.showDialog(null, null);
+
+                fileFilter = new FileFilterTest();
+                jFileChooser = new JFileChooser(new File("save"));
+                jFileChooser.setFileFilter(fileFilter);
+                jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
+                flag = jFileChooser.showDialog(null, null);
+
+                if (flag == JFileChooser.APPROVE_OPTION) {
+                    FileOperation.setReadFile(jFileChooser.getSelectedFile());
+
+                    BackEnd.status = Status.REPLAYING;
+                    backEnd.initThread();
+                    backEnd.initTimer(REPLAY_CLOCK);
                 }
-                FileOperation.setReadFile(jFileChooser.getSelectedFile());
             }
             else if(key == KeyEvent.VK_P){ // 暂停
                 BackEnd.stop = !BackEnd.stop;

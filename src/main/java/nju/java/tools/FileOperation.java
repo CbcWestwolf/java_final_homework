@@ -20,8 +20,6 @@ import java.util.Date;
  */
 public class FileOperation {
 
-    private static int COUNT = 0;
-
     private static File defaultFile = new File("save"+File.separator+"default.fight");
 
     // 读写的文件
@@ -89,7 +87,7 @@ public class FileOperation {
             Date now = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
             String str = "save" + File.separator + simpleDateFormat.format(now) + SUFFIX;
-            // System.out.println(str);
+
             writeFile = new File(str);
         }
 
