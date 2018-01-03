@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by cbcwestwolf on 2017/12/28.
  */
-public class Good extends Creatures {
+public abstract class Good extends Creatures {
 
     public Good(int x, int y, Ground ground) {
         super(x, y, ground);
@@ -75,8 +75,6 @@ public class Good extends Creatures {
         }
 
     }
-
-
 
     @Override
     public String toString(){

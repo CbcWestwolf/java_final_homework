@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by cbcwestwolf on 2017/12/28.
  */
-public class Bad extends Creatures {
+public abstract class Bad extends Creatures {
     public Bad(int x, int y, Ground ground) {
         super(x, y, ground);
     }

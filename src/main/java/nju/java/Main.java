@@ -8,7 +8,7 @@ public class Main extends JFrame{
 
     public Main(){
         Ground ground = new Ground();
-        add(ground);  // 在GameBourd
+        add(ground);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(Ground.PIXEL_WIDTH+20, Ground.PIXEL_HEIGHT+50+125);

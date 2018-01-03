@@ -18,10 +18,6 @@ public abstract class Creatures implements Runnable ,Serializable {
     private int y ; // [ 0 , MAX_Y ]
     public Thread thread = null;
 
-    public Thread getThread() {
-        return thread;
-    }
-
     public void setThread(Thread thread) {
         this.thread = thread;
     }
@@ -95,10 +91,6 @@ public abstract class Creatures implements Runnable ,Serializable {
         int loss = this.blood < (c.getPower()/2) ? this.blood : (c.getPower()/2);
         return get - loss;
     }
-
-    //public abstract void Attack(); // 攻击敌人
-
-    //public abstract void Walk(); // 向Ground请求位移，Ground检查无误后调用Creatures的位移函数
 
     public static final int distance(Creatures a, Creatures b){
         return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());

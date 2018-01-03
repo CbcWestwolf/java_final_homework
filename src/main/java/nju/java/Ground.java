@@ -160,7 +160,7 @@ public class Ground extends JPanel {
             }
             else if(key == KeyEvent.VK_L){ // 回放
 
-                /**
+                /*
                  1.添加读入记录
                  2.根据记录更新某个生物体的位置、状态
                  3.repaint();
@@ -324,9 +324,11 @@ public class Ground extends JPanel {
             if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
                 status = Status.FINISHED;
                 System.out.println("转为FINISHED");
-                for(Thread t : creaturesThreads)
+
+                for (Thread t : creaturesThreads)
                     t.suspend();
-                // TODO:弹出游戏信息提示
+
+
                 return;
             }
         }
@@ -352,6 +354,7 @@ public class Ground extends JPanel {
                     fileReader.close();
                     for( Thread t : creaturesThreads )
                         t.suspend();
+
                     status = Status.CLOSE;
                     System.out.println("状态转为CLOSE");
                 }

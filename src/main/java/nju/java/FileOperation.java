@@ -5,7 +5,6 @@ import nju.java.creatures.bad.Bad;
 import nju.java.creatures.good.Good;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

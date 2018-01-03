@@ -10,7 +10,7 @@
 - 异常处理
 - 集合类型+泛型
 - 注解
-- 线程安全 http://dylanxu.iteye.com/blog/1322066
+- 线程安全
 - 单元测试
 - 说明战斗事宜（例如行进速度有多快，是不是每个生物体速度一样，死亡概率谁大谁小等）
 - 最精彩的某一次战斗过程记录文件连同代码一并提交
@@ -27,7 +27,7 @@
 4. 回放和打斗过程中按下`P`可暂停
 
 
-### 跳转图如下
+### 程序状态图如下
 
 ![状态图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\状态图.jpg)
 
@@ -52,4 +52,42 @@
 
 所有角色的血量都是100
 
-## UML类图说明
+## 继承——UML类图说明
+
+抽象类*Creatures*有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
+
+![UNL类图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\UNL类图.png)
+
+
+
+## 封装
+
+详情见javadoc文档
+
+
+
+## 多态
+
+`Ground`类中的3个`ArrayList`均使用泛型实现，体现了多态：
+
+```java
+private ArrayList<Good> goodCreatures = null;
+private ArrayList<Bad> badCreatures = null;
+private ArrayList<Creatures> deadCreatures = null; 
+```
+
+
+
+## 设计原则
+
+### 单一职责原则
+
+* `Ground`类只负责显示
+* `BackEnd`类只负责游戏的逻辑
+
+### 里氏替换原则
+
+所有的*Creatures*都能被*Good*或者*Bad*替换；所有的*Good*都能被**Grandpa**或者**GourdDolls**替换；所有的*Bad*都能被**ScorpionKing**、**SnakeQueen**或者**Toad**替换。
+
+
+
