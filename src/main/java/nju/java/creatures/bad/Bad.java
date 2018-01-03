@@ -1,14 +1,13 @@
 package nju.java.creatures.bad;
 
 import nju.java.BackEnd;
-import nju.java.Ground;
 import nju.java.creatures.Creatures;
 import nju.java.creatures.good.Good;
 import nju.java.tools.Status;
 
 import java.util.ArrayList;
 
-import static nju.java.ConstantValue.*;
+import static nju.java.tools.ConstantValue.*;
 
 /**
  * Created by cbcwestwolf on 2017/12/28.

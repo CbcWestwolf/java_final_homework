@@ -1,4 +1,4 @@
-package nju.java;
+package nju.java.tools;
 
 /**
  * Created by cbcwestwolf on 2018/1/3.

@@ -3,7 +3,7 @@ package nju.java; /**
  */
 
 import javax.swing.*;
-import static nju.java.ConstantValue.*;
+import static nju.java.tools.ConstantValue.*;
 
 public class Main extends JFrame{
 

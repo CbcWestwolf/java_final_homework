@@ -1,9 +1,9 @@
-package nju.java;
+package nju.java.tools;
 
 import nju.java.creatures.Creatures;
 import nju.java.creatures.bad.Bad;
 import nju.java.creatures.good.Good;
-import static nju.java.ConstantValue.*;
+import static nju.java.tools.ConstantValue.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -16,8 +16,38 @@ import java.util.Date;
 public class FileOperation {
 
 
+
+
+    // 读写的文件
+    private File readFile = null;
+    private FileReader fileReader;
+    private BufferedReader bufferedReader ;
     private static File writeFile = null;
 
+
+    public BufferedReader getBufferedReader() {
+        return bufferedReader;
+    }
+
+    public void setBufferedReader(BufferedReader bufferedReader) {
+        this.bufferedReader = bufferedReader;
+    }
+
+    public FileReader getFileReader() {
+        return fileReader;
+    }
+
+    public void setFileReader(FileReader fileReader) {
+        this.fileReader = fileReader;
+    }
+
+    public File getReadFile() {
+        return readFile;
+    }
+
+    public void setReadFile(File readFile) {
+        this.readFile = readFile;
+    }
     public static synchronized void writeFile(ArrayList<Good> goodCreatures,
                                         ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures){
         // 寻找一个可用的文件

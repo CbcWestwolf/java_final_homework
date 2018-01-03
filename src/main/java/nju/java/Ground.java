@@ -3,27 +3,16 @@ package nju.java;
 import nju.java.creatures.Creatures;
 import nju.java.creatures.bad.Bad;
 import nju.java.creatures.good.Good;
-import nju.java.creatures.good.GourdDolls;
-import nju.java.creatures.good.Grandpa;
-import nju.java.creatures.bad.ScorpionKing;
-import nju.java.creatures.bad.SnakeQueen;
-import nju.java.creatures.bad.Toad;
 import nju.java.tools.*;
-import nju.java.ConstantValue.*;
-import static nju.java.ConstantValue.*;
+
+import static nju.java.tools.ConstantValue.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 
 
 /**

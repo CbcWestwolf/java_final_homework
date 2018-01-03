@@ -8,6 +8,7 @@ import nju.java.creatures.bad.Toad;
 import nju.java.creatures.good.Good;
 import nju.java.creatures.good.GourdDolls;
 import nju.java.creatures.good.Grandpa;
+import nju.java.tools.FileOperation;
 import nju.java.tools.GourddollsName;
 import nju.java.tools.Status;
 
@@ -18,22 +19,17 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static nju.java.ConstantValue.*;
-import static nju.java.ConstantValue.SPACE;
-import static nju.java.ConstantValue.STEP;
+import static nju.java.tools.ConstantValue.*;
+import static nju.java.tools.ConstantValue.SPACE;
+import static nju.java.tools.ConstantValue.STEP;
 
 /**
  * Created by cbcwestwolf on 2018/1/3.
  */
 public class BackEnd extends JFrame {
 
-    // 读写的文件
-    private File readFile = null;
-    private FileReader fileReader;
-    private BufferedReader bufferedReader ;
-
-
     Ground ground = null;
+    FileOperation fileOperation = null;
 
     // 状态定义
     public static boolean stop; // 玩家是否按下暂停键
@@ -63,7 +59,7 @@ public class BackEnd extends JFrame {
     private ActionListener timerTask ;
 
     public BackEnd(){
-
+        fileOperation = new FileOperation();
     }
 
     public void setGround(Ground ground) {
@@ -80,7 +76,7 @@ public class BackEnd extends JFrame {
     }
 
     public void setReadFile(File readFile) {
-        this.readFile = readFile;
+        fileOperation.setReadFile(readFile);
     }
 
     public Ground getGround() {
@@ -230,22 +226,22 @@ public class BackEnd extends JFrame {
         if( status == Status.REPLAYING && (! stop) ){
             try {
                 String str = null;
-                if (readFile == null) {
+                if (fileOperation.getReadFile() == null) {
                     //System.out.println("找不到文件");
                     return;
                 }
-                if (fileReader == null) {
-                    synchronized (readFile) {
-                        fileReader = new FileReader(readFile);
-                        bufferedReader = new BufferedReader(fileReader);
+                if (fileOperation.getFileReader() == null) {
+                    synchronized (fileOperation.getReadFile()) {
+                        fileOperation.setFileReader(new FileReader(fileOperation.getReadFile()));
+                        fileOperation.setBufferedReader(new BufferedReader(fileOperation.getFileReader()));
                     }
                 }
 
-                if ((str = bufferedReader.readLine()) != null) {
+                if ((str = fileOperation.getBufferedReader().readLine()) != null) {
                     replaying(str);
                 } else {
-                    bufferedReader.close();
-                    fileReader.close();
+                    fileOperation.getBufferedReader().close();
+                    fileOperation.getFileReader().close();
                     for( Thread t : creaturesThreads )
                         t.suspend();
 
