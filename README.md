@@ -146,8 +146,9 @@ public synchronized void check(){
 ## 单元测试
 
 * 对角色的测试以`Grandpa`为代表，有3个测试方法`testString`、`testDead`、`testLocation`和`testImage()`，分别测试`Grandpa`的`toString()`、`isDead()`、`setBlood()`、`getBlood()`、`getX()`、`getY()`、`setX()`、`setY()`、`getPower()`、`getImage()`、`setImage()`等方法的正确性。由于其它角色的设置与`Grandpa`具有相似性，便不需再进行单元测试
-* 对文件读写器`FileOperation`则直接测试`writeFile()`方法是否会抛出`FileNotFoundException`异常
-* ​
+* 由于`BackEnd`、`Ground`和`Main`等与GUI相关，所以不进行单元测试。
+
+
 
 
 

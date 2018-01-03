@@ -6,7 +6,7 @@ import java.io.File;
 /***
  * @author cbcwestwolf
  * <br>
- * This class is used to restrain the file type that player can open.
+ * FileFilerTest类用于筛选能打开的文件类型
  *
  * @see nju.java.Ground
  */

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 /***
  * @author cbcwestwolf
  * <br>
- * This class define the specific properties of Good creatuures
- * The basic properties is defined in Creatures class.
+ * Good类定义了正方角色具体的属性 <br>
+ * 角色的基本属性在Creatures类中定义
  *
  * @see nju.java.creatures.Creatures
  */
@@ -88,7 +88,11 @@ public abstract class Good extends Creatures {
         return "正方";
     }
 
-    // 寻找可攻击的敌人
+    /**
+     * 寻找可攻击的敌人
+     *
+     * @return 可攻击的敌人列表
+     */
     public ArrayList<Bad> getAttackable(){
         ArrayList<Bad> all = this.backEnd.getBadCreatures();
         ArrayList<Bad> result = new ArrayList<Bad>();
@@ -100,7 +104,11 @@ public abstract class Good extends Creatures {
         return result;
     }
 
-    // 寻找距离最近的敌人
+    /**
+     * 寻找距离最近的敌人
+     *
+     * @return 距离最近的敌人
+     */
     public Bad getNearestBad(){
         ArrayList<Bad> all = this.backEnd.getBadCreatures();
         int minDistance = Integer.MAX_VALUE;

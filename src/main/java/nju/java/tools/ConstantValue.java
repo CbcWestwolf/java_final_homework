@@ -3,7 +3,7 @@ package nju.java.tools;
 /***
  * @author cbcwestwolf
  * <br>
- * This interface define some canstant values.
+ * 定义常量
  *
  */
 public interface ConstantValue {

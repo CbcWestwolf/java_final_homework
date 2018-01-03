@@ -18,9 +18,9 @@ import java.net.URL;
 /***
  * @author cbcwestwolf
  * <br>
- * This class is used to paint the gmae for players.
- * The inner logic of the game is defined in BackEnd class.
- * It is used by Main class.
+ * Ground类用户绘图<br>
+ * 游戏内部逻辑由BackEnd类完成<br>
+ * 该类被Main类调用<br>
  *
  * @see nju.java.BackEnd
  * @see nju.java.Main
@@ -44,11 +44,6 @@ public class Ground extends JPanel {
         setFocusable(true); // 设置可见
         addKeyListener(new TAdapter());// 添加键盘监视器
         loadPictures(); // 加载图像
-    }
-
-
-    public Image getBackgroundImage() {
-        return backgroundImage;
     }
 
     public Image getGrandpaImage() {
@@ -119,6 +114,9 @@ public class Ground extends JPanel {
         badTombstoneImage = imageIcon.getImage();
     }
 
+    /**
+     * 键盘响应类
+     */
     class TAdapter extends KeyAdapter {
         @Override
         public synchronized void keyPressed(KeyEvent event){
@@ -174,6 +172,9 @@ public class Ground extends JPanel {
         }
     }
 
+    /**
+     * 绘制图片和提示信息
+     */
     private synchronized void paintImage(Graphics g) {
 
         g.drawImage(backgroundImage, 0, 0, PIXEL_WIDTH, PIXEL_HEIGHT, this);

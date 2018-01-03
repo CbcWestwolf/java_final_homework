@@ -6,8 +6,8 @@ import static nju.java.tools.ConstantValue.*;
 /***
  * @author cbcwestwolf
  * <br>
- * This class is the entry of the game.
- * It uses BackEnd class and Ground class to perfome the game.
+ * 程序入口类<br>
+ * 使用BackEnd类和Ground类完成游戏逻辑<br>
  *
  * @see nju.java.Ground
  * @see nju.java.BackEnd

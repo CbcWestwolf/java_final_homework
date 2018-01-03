@@ -13,8 +13,8 @@ import java.util.Date;
 /***
  * @author cbcwestwolf
  * <br>
- * This class is used to do IO operation for BackEnd class.
- * It is used in BackEnd class.
+ * FileOperation类用于进行IO操作 <br>
+ * FileOperation类由BackEnd类调用
  *
  * @see nju.java.BackEnd
  */
@@ -50,6 +50,10 @@ public class FileOperation {
         }
     }
 
+    /**
+     * 从打开的文件中得到一行字符
+     * @return 打开文件中的字符串。如果文件读取到末尾，返回一个null值
+     */
     public static synchronized String getNextString(){
         if( readFile == null )
             return null;
@@ -70,6 +74,13 @@ public class FileOperation {
         return str;
     }
 
+    /**
+     * 向文件中写入交战记录
+     * @param goodCreatures 正方列表
+     * @param badCreatures 反方列表
+     * @param deadCreatures 牺牲的角色列表
+     * @throws FileNotFoundException 写入文件时找不到文件，会写入默认文件，并再交由调用者处理
+     */
     public static synchronized void writeFile(ArrayList<Good> goodCreatures,
                                               ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures) throws FileNotFoundException {
 

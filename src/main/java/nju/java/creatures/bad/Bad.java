@@ -12,8 +12,8 @@ import static nju.java.tools.ConstantValue.*;
 /***
  * @author cbcwestwolf
  * <br>
- * This class define the specific properties of Bad creatuures
- * The basic properties is defined in Creatures class.
+ * Bad类定义了反方角色具体的属性 <br>
+ * 角色的基本属性在Creatures类中定义
  *
  * @see nju.java.creatures.Creatures
  */
@@ -22,6 +22,11 @@ public abstract class Bad extends Creatures {
         super(x, y, backEnd);
     }
 
+    /**
+     * 寻找可攻击的敌人
+     *
+     * @return 可攻击的敌人列表
+     */
     public ArrayList<Good> getAttackable() {
         ArrayList<Good> all = this.backEnd.getGoodCreatures();
         ArrayList<Good> result = new ArrayList<Good>();
@@ -33,7 +38,11 @@ public abstract class Bad extends Creatures {
         return result;
     }
 
-    // 寻找距离最近的敌人
+    /**
+     * 寻找距离最近的敌人
+     *
+     * @return 距离最近的敌人
+     */
     public Good getNearestGood() {
         ArrayList<Good> all = this.backEnd.getGoodCreatures();
         int minDistance = Integer.MAX_VALUE;

@@ -12,8 +12,8 @@ import java.net.URL;
 /***
  * @author cbcwestwolf
  * <br>
- * This class define the basic properties of creatures.
- * More specific properties of creatuures is defined in Good class and Bad class.
+ * Creatures类定义了角色的基本属性 <br>
+ * 角色的更多属性在Good类和Bad类中定义
  *
  * @see Good
  * @see nju.java.creatures.bad.Bad
@@ -93,12 +93,23 @@ public abstract class Creatures implements Runnable ,Serializable {
 
     public abstract void run(); // 行动有两种：一种是攻击(Attack)，一种是移动(Walk)
 
+    /**
+     * 计算攻击的得分 <br>
+     * @param c 攻击的对象
+     * @return 返回得分
+     */
     protected int attackValue(Creatures c){ // 计算攻击得分
         int get = c.getBlood() < this.getPower() ? c.getBlood() : this.getPower();
         int loss = this.blood < (c.getPower()/2) ? this.blood : (c.getPower()/2);
         return get - loss;
     }
 
+    /**
+     * 计算两个生物体之间的曼哈顿距离
+     * @param a
+     * @param b
+     * @return a和b的曼哈顿距离
+     */
     public static final int distance(Creatures a, Creatures b){
         return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());
     }

@@ -26,9 +26,9 @@ import static nju.java.tools.ConstantValue.STEP;
 /***
  * @author cbcwestwolf
  * <br>
- * This class is used to define the inner logic of the game.
- * The painting of the game is done in Ground class.
- * It is used by Main class.
+ * BackEnd类用于实现游戏的内部逻辑 <br>
+ * 游戏的绘图逻辑由Ground类实现<br>
+ * BackEnd类被Main调用<br>
  *
  * @see nju.java.Ground
  * @see nju.java.Main
@@ -93,6 +93,9 @@ public class BackEnd extends JFrame {
         return deadCreatures;
     }
 
+    /**
+     * 初始化所有角色，包括位置和图片
+     */
     private void initCreature(){
 
         // 初始化爷爷
@@ -145,6 +148,10 @@ public class BackEnd extends JFrame {
         deadCreatures = new ArrayList<Creatures>();
     }
 
+    /**
+     * 初始化一个Timer对象
+     * @param time 检查的时间周期
+     */
     public void initTimer(int time){
         timerTask = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -156,9 +163,12 @@ public class BackEnd extends JFrame {
         timer.start();
     }
 
+    /**
+     * 初始化角色，并为每个角色对应一个线程
+     */
     public void initThread() {
 
-        initCreature(); // 初始化生物
+        initCreature();
 
         creaturesThreads = new ArrayList<Thread>();
         if( ! goodCreatures.isEmpty() )
@@ -181,7 +191,9 @@ public class BackEnd extends JFrame {
         System.out.println("初始化所有线程");
     }
 
-    // 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
+    /**
+     * 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
+     */
     public synchronized void check(){
 
         if( status == Status.FIGHTING ) {
@@ -206,7 +218,6 @@ public class BackEnd extends JFrame {
             }
 
             try {
-                //System.out.println(goodCreatures.size()+" "+badCreatures.size()+" "+deadCreatures.size());
                 FileOperation.writeFile(goodCreatures, badCreatures, deadCreatures);
 
             }
@@ -247,8 +258,14 @@ public class BackEnd extends JFrame {
         }
     }
 
-    // Creature API : 攻击成功返回boolean
-    // 检查的重点：距离
+    /**
+     * 该方法接受一个来自角色的攻击请求，判断该攻击是否合法，如果合法就进行攻击。<br>
+     * 返回攻击是否成功 <br>
+     * 检查的内容是距离
+     * @param attacker 攻击者
+     * @param attacked 被攻击者
+     * @return 攻击是否成功
+     */
     public boolean requireAttack(Creatures attacker, Creatures attacked){
         int distance = Creatures.distance(attacker,attacked);
         if( distance > 0 && distance <= DISTANCE/STEP ){ // 可以攻击
@@ -265,8 +282,14 @@ public class BackEnd extends JFrame {
             return false;
     }
 
-    // Creature API : 攻击成功返回boolean
-    // 检查的重点：是否重合，是否越界，是否只有一个值为1
+    /**
+     * 该方法接受一个来自角色的移动请求，判断该移动是否合法，如果合法就进行移动。<br>
+     * 返回移动是否成功
+     * @param c 发出移动请求的角色
+     * @param x_off x方向移动的距离
+     * @param y_off y方向移动的距离
+     * @return 移动是否成功
+     */
     public boolean requireWalk(Creatures c, int x_off, int y_off){
         if( x_off * y_off != 0 || Math.abs(x_off+y_off) != 1 ) // 是否只有一个值为1
             return false;
@@ -294,6 +317,11 @@ public class BackEnd extends JFrame {
         return true;
     }
 
+
+    /**
+     * 用于将文件中读出的信息写入各个角色列表中
+     * @param str str为从文件中读取的信息
+     */
     private synchronized void replaying(String str) {
 
         String name = null;
