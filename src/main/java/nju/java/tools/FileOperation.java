@@ -15,15 +15,12 @@ import java.util.Date;
  */
 public class FileOperation {
 
-
-
-
     // 读写的文件
-    private File readFile = null;
+    private static File readFile = null;
+    private static File writeFile = null;
+    private static File defaultFile = new File("save"+File.separator+"default.fight");
     private FileReader fileReader;
     private BufferedReader bufferedReader ;
-    private static File writeFile = null;
-
 
     public BufferedReader getBufferedReader() {
         return bufferedReader;
@@ -48,8 +45,10 @@ public class FileOperation {
     public void setReadFile(File readFile) {
         this.readFile = readFile;
     }
+
     public static synchronized void writeFile(ArrayList<Good> goodCreatures,
-                                        ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures){
+                                        ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures) throws FileNotFoundException
+    {
         // 寻找一个可用的文件
         if (writeFile == null){
             Date now = new Date();
@@ -92,7 +91,8 @@ public class FileOperation {
             fileWriter.close();
         }
         catch (FileNotFoundException e){
-
+            writeFile = defaultFile;
+            throw new FileNotFoundException("没有找到写入的文件");
         }
         catch (IOException e){
 

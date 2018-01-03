@@ -90,11 +90,41 @@ private ArrayList<Creatures> deadCreatures = null;
 * `Creatures`类（包括其子类）只负责角色的定义
 * `ConstantValue`接口只负责提供全局常量
 * `FileFilterTest`类只负责过滤类型为".fight"的文件
-* ​
+* `FileOperation`类只负责文件读写
 
 ### 里氏替换原则
 
 所有的*Creatures*都能被*Good*或者*Bad*替换；所有的*Good*都能被**Grandpa**或者**GourdDolls**替换；所有的*Bad*都能被**ScorpionKing**、**SnakeQueen**或者**Toad**替换。
 
+### 开放封闭原则
 
+`Grandpa`与`GourdDolls`同为`Good`的子类，但是之所以不直接用`Good`类，是因为`GourdDolls`类还有一个独有的域`id`以标志不同葫芦娃，这体现了**一个类应该对扩展开放**的原则。
+
+## 异常处理
+
+在写入文件时，如果出现`writeFile`不存在的情况，`writeFile()`方法会先将默认文件`defaultFile`赋值为`writeFile`，然后抛出异常；调用`writeFile()`的`check()`方法捕获异常，即可处理。
+
+```java
+/* FileOperation.java */
+public static synchronized void writeFile(ArrayList<Good> goodCreatures,                           ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures) throws FileNotFoundException{
+  ...
+    
+    catch (FileNotFoundException e){
+            writeFile = defaultFile;
+            throw new FileNotFoundException("没有找到写入的文件");
+	}
+}
+
+/* BackEnd.java */
+public synchronized void check(){
+  	...
+            try {
+                FileOperation.writeFile(goodCreatures, badCreatures, deadCreatures);
+            }
+            catch (FileNotFoundException e){             
+                e.printStackTrace();
+            }
+	...
+}
+```
 

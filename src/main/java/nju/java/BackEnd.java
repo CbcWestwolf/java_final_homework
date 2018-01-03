@@ -208,8 +208,12 @@ public class BackEnd extends JFrame {
                 }
             }
 
-            FileOperation.writeFile(goodCreatures,badCreatures,deadCreatures);
-
+            try {
+                FileOperation.writeFile(goodCreatures, badCreatures, deadCreatures);
+            }
+            catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
 
             if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
                 status = Status.FINISHED;
