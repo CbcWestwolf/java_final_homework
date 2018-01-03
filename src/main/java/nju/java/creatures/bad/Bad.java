@@ -2,7 +2,7 @@ package nju.java.creatures.bad;
 
 import nju.java.BackEnd;
 import nju.java.creatures.Creatures;
-import nju.java.creatures.good.Good;
+import nju.java.creatures.Good.Good;
 import nju.java.tools.Status;
 
 import java.util.ArrayList;

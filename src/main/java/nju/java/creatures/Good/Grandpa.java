@@ -1,8 +1,7 @@
-package nju.java.creatures.good;
+package nju.java.creatures.Good;
 
 import nju.java.BackEnd;
-import nju.java.Ground;
-import nju.java.creatures.Creatures;
+import nju.java.creatures.Good.Good;
 
 /**
  * Created by cbcwestwolf on 2017/12/27.

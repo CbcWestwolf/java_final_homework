@@ -1,7 +1,7 @@
 package nju.java.creatures;
 
 import nju.java.BackEnd;
-import nju.java.Ground;
+import nju.java.creatures.Good.Good;
 
 
 import javax.swing.*;
@@ -15,7 +15,7 @@ import java.net.URL;
  * This class define the basic properties of creatures.
  * More specific properties of creatuures is defined in Good class and Bad class.
  *
- * @see nju.java.creatures.good.Good
+ * @see Good
  * @see nju.java.creatures.bad.Bad
  */
 

@@ -1,4 +1,4 @@
-package nju.java.creatures.good;
+package nju.java.creatures.Good;
 
 import nju.java.BackEnd;
 import nju.java.creatures.Creatures;

@@ -1,13 +1,13 @@
 package nju.java;
 
 import nju.java.creatures.Creatures;
+import nju.java.creatures.Good.Good;
+import nju.java.creatures.Good.GourdDolls;
+import nju.java.creatures.Good.Grandpa;
 import nju.java.creatures.bad.Bad;
 import nju.java.creatures.bad.ScorpionKing;
 import nju.java.creatures.bad.SnakeQueen;
 import nju.java.creatures.bad.Toad;
-import nju.java.creatures.good.Good;
-import nju.java.creatures.good.GourdDolls;
-import nju.java.creatures.good.Grandpa;
 import nju.java.tools.FileOperation;
 import nju.java.tools.GourddollsName;
 import nju.java.tools.Status;
@@ -36,7 +36,6 @@ import static nju.java.tools.ConstantValue.STEP;
 public class BackEnd extends JFrame {
 
     Ground ground = null;
-    FileOperation fileOperation = null;
 
     // 状态定义
     public static boolean stop; // 玩家是否按下暂停键
@@ -65,10 +64,6 @@ public class BackEnd extends JFrame {
     private Timer timer ;
     private ActionListener timerTask ;
 
-    public BackEnd(){
-        fileOperation = new FileOperation();
-    }
-
     public void setGround(Ground ground) {
         this.ground = ground;
     }
@@ -80,10 +75,6 @@ public class BackEnd extends JFrame {
 
     public static Status getStatus() {
         return status;
-    }
-
-    public void setReadFile(File readFile) {
-        fileOperation.setReadFile(readFile);
     }
 
     public Ground getGround() {
@@ -215,7 +206,9 @@ public class BackEnd extends JFrame {
             }
 
             try {
+                //System.out.println(goodCreatures.size()+" "+badCreatures.size()+" "+deadCreatures.size());
                 FileOperation.writeFile(goodCreatures, badCreatures, deadCreatures);
+
             }
             catch (FileNotFoundException e){
                 e.printStackTrace();
@@ -228,41 +221,29 @@ public class BackEnd extends JFrame {
                 for (Thread t : creaturesThreads)
                     t.suspend();
 
-
                 return;
             }
         }
 
-        if( status == Status.REPLAYING && (! stop) ){
-            try {
-                String str = null;
-                if (fileOperation.getReadFile() == null) {
-                    //System.out.println("找不到文件");
-                    return;
-                }
-                if (fileOperation.getFileReader() == null) {
-                    synchronized (fileOperation.getReadFile()) {
-                        fileOperation.setFileReader(new FileReader(fileOperation.getReadFile()));
-                        fileOperation.setBufferedReader(new BufferedReader(fileOperation.getFileReader()));
-                    }
-                }
+        if( status == Status.REPLAYING && (! stop) ) {
 
-                if ((str = fileOperation.getBufferedReader().readLine()) != null) {
-                    replaying(str);
-                } else {
-                    fileOperation.getBufferedReader().close();
-                    fileOperation.getFileReader().close();
-                    for( Thread t : creaturesThreads )
-                        t.suspend();
-
-                    status = Status.CLOSE;
-                    System.out.println("状态转为CLOSE");
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            String str = null;
+            if (FileOperation.getReadFile() == null) {
+                return;
             }
+
+            str = FileOperation.getNextString();
+            if (str != null) {
+                replaying(str);
+            } else {
+                for (Thread t : creaturesThreads)
+                    t.suspend();
+
+                status = Status.CLOSE;
+                System.out.println("状态转为CLOSE");
+            }
+
+
         }
     }
 

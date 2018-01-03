@@ -1,8 +1,8 @@
 package nju.java;
 
 import nju.java.creatures.Creatures;
+import nju.java.creatures.Good.Good;
 import nju.java.creatures.bad.Bad;
-import nju.java.creatures.good.Good;
 import nju.java.tools.*;
 
 import static nju.java.tools.ConstantValue.*;
@@ -28,7 +28,6 @@ import java.net.URL;
 public class Ground extends JPanel {
 
     private BackEnd backEnd = null;
-
 
     // 背景图片
     private Image backgroundImage = null; // 背景图片
@@ -135,7 +134,8 @@ public class Ground extends JPanel {
                     backEnd.initTimer(TIME_CLOCK);
                 }
             }
-            else if(key == KeyEvent.VK_L){ // 回放
+            else if(key == KeyEvent.VK_L
+                    && ( BackEnd.status == Status.WELCOME || BackEnd.status == Status.FINISHED ) ) { // 回放
 
                 /*
                  1.添加读入记录
@@ -145,25 +145,22 @@ public class Ground extends JPanel {
                  4.继续读入记录
                  */
 
-                if( BackEnd.status == Status.WELCOME || BackEnd.status == Status.FINISHED ) {
-                    BackEnd.status = Status.REPLAYING;
-                    backEnd.initThread();
-                    backEnd.initTimer(REPLAY_CLOCK);
-                    System.out.println("REPLAYING");
+                BackEnd.status = Status.REPLAYING;
+                backEnd.initThread();
+                backEnd.initTimer(REPLAY_CLOCK);
+                System.out.println("REPLAYING");
 
-                    int flag = 1;
-                    JFileChooser jFileChooser = null;
-                    FileFilterTest fileFilter = null ;
-                    while(flag != JFileChooser.APPROVE_OPTION) {
-                        fileFilter = new FileFilterTest();
-                        jFileChooser = new JFileChooser(new File("save"));
-                        jFileChooser.setFileFilter(fileFilter);
-                        jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
-                        flag = jFileChooser.showDialog(null, null);
-                    }
-                    backEnd.setReadFile(jFileChooser.getSelectedFile());
+                int flag = 1;
+                JFileChooser jFileChooser = null;
+                FileFilterTest fileFilter = null;
+                while (flag != JFileChooser.APPROVE_OPTION) {
+                    fileFilter = new FileFilterTest();
+                    jFileChooser = new JFileChooser(new File("save"));
+                    jFileChooser.setFileFilter(fileFilter);
+                    jFileChooser.setDialogTitle("选择作战记录（文件名即为作战时间）");
+                    flag = jFileChooser.showDialog(null, null);
                 }
-
+                FileOperation.setReadFile(jFileChooser.getSelectedFile());
             }
             else if(key == KeyEvent.VK_P){ // 暂停
                 BackEnd.stop = !BackEnd.stop;

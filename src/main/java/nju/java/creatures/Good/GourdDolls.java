@@ -1,8 +1,9 @@
-package nju.java.creatures.good;
+package nju.java.creatures.Good;
+
+import java.util.Random;
 
 import nju.java.BackEnd;
-import nju.java.Ground;
-import java.util.Random;
+import nju.java.creatures.Good.Good;
 import nju.java.tools.GourddollsName;
 
 /**

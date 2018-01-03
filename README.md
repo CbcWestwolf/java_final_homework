@@ -52,6 +52,10 @@
 
 所有角色的血量都是100
 
+**除了攻击力不同，所有角色的其它属性都是相同的。**
+
+
+
 ## 继承——UML类图说明
 
 抽象类*Creatures*有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
@@ -138,4 +142,12 @@ public synchronized void check(){
 ## 封装与注解
 
 用`@author`和`@see`等注解编写了javadoc，详情请见javadoc文档
+
+## 单元测试
+
+* 对角色的测试以`Grandpa`为代表，有3个测试方法`testString`、`testDead`、`testLocation`和`testImage()`，分别测试`Grandpa`的`toString()`、`isDead()`、`setBlood()`、`getBlood()`、`getX()`、`getY()`、`setX()`、`setY()`、`getPower()`、`getImage()`、`setImage()`等方法的正确性。由于其它角色的设置与`Grandpa`具有相似性，便不需再进行单元测试
+* 对文件读写器`FileOperation`则直接测试`writeFile()`方法是否会抛出`FileNotFoundException`异常
+* ​
+
+
 
