@@ -8,7 +8,9 @@ import static nju.java.ConstantValue.*;
 public class Main extends JFrame{
 
     public Main(){
-        Ground ground = new Ground();
+        BackEnd backEnd = new BackEnd();
+        Ground ground = new Ground(backEnd);
+        backEnd.setGround(ground);
         add(ground);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

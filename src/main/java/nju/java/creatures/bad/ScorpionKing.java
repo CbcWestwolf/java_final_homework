@@ -1,5 +1,6 @@
 package nju.java.creatures.bad;
 
+import nju.java.BackEnd;
 import nju.java.Ground;
 import nju.java.creatures.Creatures;
 
@@ -9,8 +10,8 @@ import nju.java.creatures.Creatures;
 public class ScorpionKing extends Bad {
 
 
-    public ScorpionKing(int x, int y , Ground ground){
-        super(x,y,ground);
+    public ScorpionKing(int x, int y , BackEnd backEnd){
+        super(x,y,backEnd);
         power = 80;
     }
 

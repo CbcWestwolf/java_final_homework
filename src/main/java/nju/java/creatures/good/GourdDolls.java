@@ -1,5 +1,6 @@
 package nju.java.creatures.good;
 
+import nju.java.BackEnd;
 import nju.java.Ground;
 import java.util.Random;
 import nju.java.tools.GourddollsName;
@@ -10,8 +11,8 @@ import nju.java.tools.GourddollsName;
 public class GourdDolls extends Good {
 
     private int id;
-    public GourdDolls(int x, int y, Ground ground,int id) {
-        super(x, y, ground);
+    public GourdDolls(int x, int y, BackEnd backEnd, int id) {
+        super(x, y, backEnd);
         power = 50 + new Random().nextInt(50);
         this.id = id;
 

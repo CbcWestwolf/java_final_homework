@@ -1,5 +1,6 @@
 package nju.java.creatures.good;
 
+import nju.java.BackEnd;
 import nju.java.Ground;
 import nju.java.creatures.Creatures;
 
@@ -8,8 +9,8 @@ import nju.java.creatures.Creatures;
  */
 public class Grandpa extends Good {
 
-    public Grandpa(int x, int y, Ground ground) {
-        super(x, y, ground);
+    public Grandpa(int x, int y, BackEnd backEnd) {
+        super(x, y, backEnd);
         power = 10; // 爷爷羸弱无比
 
     }

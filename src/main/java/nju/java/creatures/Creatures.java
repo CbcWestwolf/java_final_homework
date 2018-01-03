@@ -1,5 +1,6 @@
 package nju.java.creatures;
 
+import nju.java.BackEnd;
 import nju.java.Ground;
 
 
@@ -39,7 +40,7 @@ public abstract class Creatures implements Runnable ,Serializable {
     }
 
 
-    protected Ground ground; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
+    protected BackEnd backEnd; // // Creatures的创建需要Ground是因为能调用Ground的repaint函数
 
     protected int blood = 100; // 血条为 0 ~ 100
 
@@ -47,10 +48,10 @@ public abstract class Creatures implements Runnable ,Serializable {
 
     protected Image image;
 
-    public Creatures(int x, int y, Ground ground) {
+    public Creatures(int x, int y, BackEnd backEnd) {
         this.x = x ;
         this.y = y;
-        this.ground = ground;
+        this.backEnd = backEnd;
     }
 
     public int getPower() {

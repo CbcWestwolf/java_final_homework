@@ -1,5 +1,6 @@
 package nju.java.creatures.bad;
 
+import nju.java.BackEnd;
 import nju.java.Ground;
 import nju.java.creatures.Creatures;
 
@@ -9,8 +10,8 @@ import nju.java.creatures.Creatures;
 public class Toad extends Bad{
 
     private int id ;
-    public Toad(int x, int y, Ground ground, int id) {
-        super(x, y, ground);
+    public Toad(int x, int y, BackEnd backEnd, int id) {
+        super(x, y, backEnd);
         power = 50;
         this.id = id+1;
 

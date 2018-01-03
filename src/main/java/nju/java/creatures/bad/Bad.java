@@ -1,5 +1,6 @@
 package nju.java.creatures.bad;
 
+import nju.java.BackEnd;
 import nju.java.Ground;
 import nju.java.creatures.Creatures;
 import nju.java.creatures.good.Good;
@@ -13,12 +14,12 @@ import static nju.java.ConstantValue.*;
  * Created by cbcwestwolf on 2017/12/28.
  */
 public abstract class Bad extends Creatures {
-    public Bad(int x, int y, Ground ground) {
-        super(x, y, ground);
+    public Bad(int x, int y, BackEnd backEnd) {
+        super(x, y, backEnd);
     }
 
     public ArrayList<Good> getAttackable() {
-        ArrayList<Good> all = this.ground.getGoodCreatures();
+        ArrayList<Good> all = this.backEnd.getGoodCreatures();
         ArrayList<Good> result = new ArrayList<Good>();
 
         for (Good g : all) {
@@ -30,7 +31,7 @@ public abstract class Bad extends Creatures {
 
     // 寻找距离最近的敌人
     public Good getNearestGood() {
-        ArrayList<Good> all = this.ground.getGoodCreatures();
+        ArrayList<Good> all = this.backEnd.getGoodCreatures();
         int minDistance = Integer.MAX_VALUE;
         Good result = null;
         for (Good a : all) {
@@ -50,9 +51,9 @@ public abstract class Bad extends Creatures {
     public void run() {
 
         while (!Thread.interrupted()) {
-            if (Ground.getStatus() == Status.FIGHTING) {
+            if (BackEnd.getStatus() == Status.FIGHTING) {
                 try {
-                    if (isDead() || Ground.isStop() || Ground.getStatus() != Status.FIGHTING) {
+                    if (isDead() || BackEnd.isStop() || BackEnd.getStatus() != Status.FIGHTING) {
                         //System.out.println("没状态？");
                         Thread.sleep(TIME_CLOCK);
                         continue;
@@ -70,7 +71,7 @@ public abstract class Bad extends Creatures {
                             }
                     }
                     if (goal != null)
-                        this.ground.requireAttack(this, goal);
+                        this.backEnd.requireAttack(this, goal);
                     else {
                         // 找到距离近的
                         Good g = getNearestGood();
@@ -78,14 +79,14 @@ public abstract class Bad extends Creatures {
                         int y_off = g.getY() - this.getY();
                         if (Math.abs(x_off) > Math.abs(y_off)) {
                             if (x_off > 0)
-                                this.ground.requireWalk(this, 1, 0);
+                                this.backEnd.requireWalk(this, 1, 0);
                             else
-                                this.ground.requireWalk(this, -1, 0);
+                                this.backEnd.requireWalk(this, -1, 0);
                         } else {
                             if (y_off > 0)
-                                this.ground.requireWalk(this, 0, 1);
+                                this.backEnd.requireWalk(this, 0, 1);
                             else
-                                this.ground.requireWalk(this, 0, -1);
+                                this.backEnd.requireWalk(this, 0, -1);
                         }
                     }
 
@@ -94,7 +95,7 @@ public abstract class Bad extends Creatures {
                 } catch (Exception e) {
 
                 }
-            } else if (Ground.getStatus() ==    Status.REPLAYING) {
+            } else if (BackEnd.getStatus() ==    Status.REPLAYING) {
 
                 try {
                     Thread.sleep(0,TIME_CLOCK/REPLAY_CLOCK);
