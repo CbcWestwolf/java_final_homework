@@ -2,6 +2,11 @@
 
 **陈博钏 151220007**
 
+## jar的打开
+
+1. 请老师在用`mvn clean test package`打包后，将`target`路径下的`Huluwa.jar`包移动至项目目录下运行。因为读取和写入的文件路径是需要项目目录下的`save`目录的。
+2. ​
+
 
 ## 实现效果
 
@@ -92,13 +97,6 @@ public static synchronized void writeFile(ArrayList<Good> goodCreatures,        
   ...
     
     catch (FileNotFoundException e){
-            writeFile = defaultFile;
-      	    try {
-                fileWriter = new FileWriter(writeFile, true);
-                bufferedWriter = new BufferedWriter(fileWriter);
-            } catch (IOException ee) {
-                ee.printStackTrace();
-            }
             throw new FileNotFoundException("没有找到写入的文件");
 	}
 }
@@ -150,7 +148,7 @@ public synchronized void check(){
 
 ## 最精彩的战斗
 
-存放在`save/default.fight`中：葫芦娃大获全胜，爷爷运筹帷幄！
+存放在`save/default.fight`中：葫芦娃大获全胜，爷爷手刃蝎子大王！
 
 
 

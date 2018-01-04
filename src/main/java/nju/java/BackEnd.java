@@ -194,6 +194,7 @@ public class BackEnd extends JFrame {
     /**
      * 检查两个Creatures列表,将死了的生物拖到deadCreatures中。如果出现一方已经死亡，暂停游戏
      */
+    @SuppressWarnings("deprecation")
     public synchronized void check(){
 
         if( status == Status.FIGHTING ) {
@@ -219,14 +220,14 @@ public class BackEnd extends JFrame {
 
             try {
                 FileOperation.writeFile(goodCreatures, badCreatures, deadCreatures);
-
             }
-            catch (FileNotFoundException e){
-                e.printStackTrace();
+            catch (IOException e){
+//                e.printStackTrace();
             }
 
             if( goodCreatures.isEmpty() || badCreatures.isEmpty() ) {
                 status = Status.FINISHED;
+
 
                 for (Thread t : creaturesThreads)
                     t.suspend();
@@ -367,15 +368,17 @@ public class BackEnd extends JFrame {
                 gourdDolls[num].setImage(ground.getGoodTombstoneImage());
 
         }
-        else {
+        else if(name.substring(0,2).equals("马仔")){
             ArrayList<String> ss = new ArrayList<String>();
             int num = 0;
             for(String sss:name.replaceAll("[^0-9]", ",").split(",")){
                 if (sss.length()>0)
                     num = Integer.parseInt(sss);
             }
-            // System.out.println(num);
-            num -- ;
+            num--;
+            if( num >= 7 || num < 0){
+                System.out.println(name);
+            }
             toads[num].setX(x);
             toads[num].setY(y);
             if (isAlive)

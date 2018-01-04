@@ -6,6 +6,7 @@ import nju.java.creatures.Good.Good;
 import static nju.java.tools.ConstantValue.*;
 
 import java.io.*;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,8 +20,6 @@ import java.util.Date;
  * @see nju.java.BackEnd
  */
 public class FileOperation {
-
-    private static File defaultFile = new File("save"+File.separator+"default.fight");
 
     // 读写的文件
     private static File readFile = null;
@@ -80,15 +79,33 @@ public class FileOperation {
      * @throws FileNotFoundException 写入文件时找不到文件，会写入默认文件，并再交由调用者处理
      */
     public static synchronized void writeFile(ArrayList<Good> goodCreatures,
-                                              ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures) throws FileNotFoundException {
+                                              ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures) throws IOException {
 
         // 寻找一个可用的文件
         if (writeFile == null) {
             Date now = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-            String str = "save" + File.separator + simpleDateFormat.format(now) + SUFFIX;
 
+            //String str = "save" + File.separator + simpleDateFormat.format(now) + SUFFIX;
+
+//            URL url = FileOperation.class.getClassLoader().getResource(simpleDateFormat.format(now) + SUFFIX);
+//            if( url.getFile() != null ) {
+//
+//                writeFile = new File(url.getFile());
+//                writeFile.createNewFile();
+//            }
+//            else{
+//                System.out.println("出错了");
+//            }
+
+            File directory = new File("save");
+            if( ! directory.exists() ){
+                directory.mkdir();
+            }
+
+            String str = "save" + File.separator + simpleDateFormat.format(now) + SUFFIX;
             writeFile = new File(str);
+
         }
 
 
@@ -121,17 +138,10 @@ public class FileOperation {
             bufferedWriter.close();
             fileWriter.close();
 
-        } catch (FileNotFoundException e) {
-            writeFile = defaultFile;
-            try {
-                fileWriter = new FileWriter(writeFile, true);
-                bufferedWriter = new BufferedWriter(fileWriter);
-            } catch (IOException ee) {
-                ee.printStackTrace();
-            }
-            throw new FileNotFoundException("没有找到写入的文件");
-        } catch (IOException e) {
-
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new  IOException();
         }
     }
 
