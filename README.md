@@ -2,46 +2,66 @@
 
 **陈博钏 151220007**
 
-## jar的打开
 
-1. 请老师在用`mvn clean test package`打包后，将`target`路径下的`Huluwa.jar`包移动至项目目录下运行。因为读取和写入的文件路径是需要项目目录下的`save`目录的。
-2. ​
+
+## 关于jar文件的打开
+
+使用`mvn clean test package`构建后，`target`目录中的`Huluwa.jar`是可以直接打开的。如果出现双击打开之后界面过大，最下方的说明栏被遮住，请用`java -jar Huluwa.jar`命令打开。
+
+
+
+## 项目目录文件说明
+
+* javadoc文件夹：存放javadoc文档
+* default.fight：存放一次精彩的战斗
+* UML类图：程序中角色类图的继承关系
+* 状态图：程序状态的定义与转换
+
+
 
 
 ## 实现效果
 
 1. 按下`空格键`之后，正方按`鹤翼`阵型出发；反方以`长蛇`阵型出发；
-2. 游戏目标：击败所有敌人
-3. 打斗开始前或者打斗结束后按下`L`可实现读取文件并回放
-4. 回放和打斗过程中按下`P`可暂停
+2. 打斗开始前或者打斗结束后按下`L`可实现读取文件并回放；
+3. 回放和打斗过程中按下`P`可暂停；
+4. 游戏目标：击败所有敌人
 
 
-### 程序状态图如下
+
+
+### 程序状态图
 
 ![状态图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\状态图.jpg)
 
+
+
 ## 框架选择
+
 采用与示例`huluwa`相似的GUI架构，即：一个继承了`JFrame`的类包含了一个继承了`JPanel`的类。
 
-## 葫芦娃妖怪战力分析
-[这里](https://www.zhihu.com/question/34581237?from=androidqq)分析了葫芦娃中妖怪的战斗能力，可见就战力来看：
-**蝎子大王>>蛤蟆精>蛇精**，其中蝎子大王和蛇精应该实现为单例模式。
+具体说明如下
 
-### 攻击安排
-1. 蝎子精80；
-2. 蛇精20；
-3. 蛤蟆精（小马仔）50；
-4. 葫芦娃50~100（随机生成）；
-5. 爷爷10
-
-### 攻击者优先
-主动攻击时，对方下降的生命值=攻击者的power，但自己下降的生命值=对方的power的一半
-
-### 血量
-
-所有角色的血量都是100
-
-**除了攻击力不同，所有角色的其它属性都是相同的。**
+* `Main`类：程序的入口，继承了`JFrame`类；
+* `Ground`类：游戏绘图类，继承了`JPanel`类；
+* `BackEnd`类：游戏逻辑类；
+* `creatures`包
+  * `Creatures`类：抽象类，定义了角色的共同属性
+  * `good`包
+    * `Good`类：抽象类，定义了正方角色的基本属性
+    * `Grandpa`类：定义了爷爷的属性
+    * `GourdDolls`类：定义了葫芦娃的属性
+  * `bad`包
+    * `Bad`类：抽象类，定义了反方角色的基本属性
+    * `ScorpionKing`类：定义了蝎子大王的基本属性
+    * `SnakeQueen`类：定义了蛇精的基本属性
+    * `Toad`类：定义了小马仔（蛤蟆精）的基本属性
+* `tools`包
+  * `ConstantValue`接口：定义了游戏中基本的常量
+  * `FileFilterTest`类：一个用来筛选`.fight`文件格式的类
+  * `FileOperation`类：文件操作类，用于读取存档和写入存档
+  * `GourddollsName`：葫芦娃名字的枚举类型
+  * `Status`：游戏状态的枚举类型
 
 
 
@@ -49,7 +69,7 @@
 
 抽象类*Creatures*有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
 
-![UNL类图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\UNL类图.png)
+![UML类图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\UML类图.png)
 
 
 
@@ -87,32 +107,7 @@ private ArrayList<Creatures> deadCreatures = null;
 
 `Grandpa`与`GourdDolls`同为`Good`的子类，但是之所以不直接用`Good`类，是因为`GourdDolls`类还有一个独有的域`id`以标志不同葫芦娃，这体现了**一个类应该对扩展开放**的原则。
 
-## 异常处理
 
-在写入文件时，如果出现`writeFile`不存在的情况，`writeFile()`方法会先将默认文件`defaultFile`赋值为`writeFile`，然后抛出异常；调用`writeFile()`的`check()`方法捕获异常，即可处理。
-
-```java
-/* FileOperation.java */
-public static synchronized void writeFile(ArrayList<Good> goodCreatures,                           ArrayList<Bad> badCreatures, ArrayList<Creatures> deadCreatures) throws FileNotFoundException{
-  ...
-    
-    catch (FileNotFoundException e){
-            throw new FileNotFoundException("没有找到写入的文件");
-	}
-}
-
-/* BackEnd.java */
-public synchronized void check(){
-  	...
-            try {
-                FileOperation.writeFile(goodCreatures, badCreatures, deadCreatures);
-            }
-            catch (FileNotFoundException e){             
-                e.printStackTrace();
-            }
-	...
-}
-```
 
 ## 集合与泛型
 
@@ -120,9 +115,13 @@ public synchronized void check(){
 
 之所以用集合而不是数组，是因为每个时钟周期的检查中，会将`GoodCreatures`和`BadCreatures`中已经死亡的角色移动到`DeadCreatures`中，而数组无法添加删除元素。
 
+
+
 ## 注解
 
 用`@author`和`@see`等注解编写了javadoc，详情请见javadoc文档
+
+
 
 ## 输入输出
 
@@ -131,6 +130,8 @@ public synchronized void check(){
 * File：用于获取文件
 * `FileReader`与`BufferedReader`：用于读取文件
 * `FileWriter`与`BufferedWriter`：用户写入文件
+
+
 
 ## 线程安全
 
@@ -141,14 +142,42 @@ public synchronized void check(){
 
 
 
+
+
 ## 单元测试
 
-* 对角色的测试以`Grandpa`为代表，有3个测试方法`testString`、`testDead`、`testLocation`和`testImage()`，分别测试`Grandpa`的`toString()`、`isDead()`、`setBlood()`、`getBlood()`、`getX()`、`getY()`、`setX()`、`setY()`、`getPower()`、`getImage()`、`setImage()`等方法的正确性。由于其它角色的设置与`Grandpa`具有相似性，便不需再进行单元测试
+* 对角色的测试以`Grandpa`为代表，有3个测试方法`testString`、`testDead`、`testLocation`和`testImage()`，分别测试`Grandpa`的`toString()`、`isDead()`、`setBlood()`、`getBlood()`、`getX()`、`getY()`、`setX()`、`setY()`、`getPower()`、`getImage()`、`setImage()`等方法的正确性。由于其它角色的设置与`Grandpa`具有相似性，便不需再进行单元测试；
 * 由于`BackEnd`、`Ground`和`Main`等与GUI相关，所以不进行单元测试。
+
+
+
+## 战斗设定
+
+[这里](https://www.zhihu.com/question/34581237?from=androidqq)分析了葫芦娃中妖怪的战斗能力，可见就战力来看：
+**蝎子大王>>蛤蟆精>蛇精**。
+
+**除了攻击力不同，所有角色的其它属性都是相同的。**
+
+### 攻击安排
+
+1. 蝎子精80；
+2. 蛇精20；
+3. 蛤蟆精（小马仔）50；
+4. 葫芦娃50~100（随机生成）；
+5. 爷爷10
+
+### 攻击者优先
+
+主动攻击时，对方下降的生命值=攻击者的power，但自己下降的生命值=对方的power的一半
+
+### 血量
+
+所有角色的血量都是100
+
+****
+
+
 
 ## 最精彩的战斗
 
-存放在`save/default.fight`中：葫芦娃大获全胜，爷爷手刃蝎子大王！
-
-
-
+存放在项目路径的`default.fight`中：葫芦娃大获全胜，爷爷运筹帷幄！
