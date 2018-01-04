@@ -32,7 +32,7 @@
 
 ### 程序状态图
 
-![状态图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\状态图.jpg)
+![状态图](https://github.com/CbcWestwolf/java_final_homework/blob/master/%E7%8A%B6%E6%80%81%E5%9B%BE.jpg)
 
 
 
@@ -69,7 +69,7 @@
 
 抽象类*Creatures*有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
 
-![UML类图](E:\NutstoreFiles\NJU\JuniorFall\java程序设计\final_homework\UML类图.png)
+![UML类图](https://github.com/CbcWestwolf/java_final_homework/blob/master/UML%E7%B1%BB%E5%9B%BE.png)
 
 
 
