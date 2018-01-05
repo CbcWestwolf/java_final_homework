@@ -18,6 +18,20 @@
 4. 游戏目标：击败所有敌人
 
 
+## 游戏界面
+
+进入游戏后界面如下
+
+![游戏界面](Game1.png)
+
+按下`空格键`后，正方按`鹤翼`阵型出发；反方以`长蛇`阵型出发
+
+![Game2](Game2.png)
+
+战斗结果：葫芦娃们大胜！
+
+![Game3](Game3.png)
+
 ## 战斗设定
 
 [这里](https://www.zhihu.com/question/34581237?from=androidqq)分析了葫芦娃中妖怪的战斗能力，可见就战力来看：
@@ -64,7 +78,7 @@
 
 ### 程序状态图
 
-![状态图](%E7%8A%B6%E6%80%81%E5%9B%BE.jpg)
+![状态图](UML_status.png)
 
 
 
@@ -99,9 +113,9 @@
 
 ## 封装与继承——UML类图说明
 
-抽象类*Creatures*有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
+抽象类*Creatures*实现了`Runnable`接口，有两个抽象子类*Good*和*Bad*，*Good*有子类**Grandpa**和**GourdDolls**，分别代表爷爷和葫芦娃；*Bad*有子类**ScorpionKing**、**SnakeQueen**和**Toad**，分别代表蝎子大王、蛇精和蝎子精（小马仔）。
 
-![UML类图](UML%E7%B1%BB%E5%9B%BE.png)
+![UML类图](UML_class.png)
 
 
 
