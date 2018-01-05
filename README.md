@@ -127,7 +127,7 @@ private ArrayList<Creatures> deadCreatures = null;
 
 `FileOperation`类中采用的输入输出类有
 
-* File：用于获取文件
+* `File`：用于获取文件
 * `FileReader`与`BufferedReader`：用于读取文件
 * `FileWriter`与`BufferedWriter`：用户写入文件
 
